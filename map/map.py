@@ -33,7 +33,7 @@ def load_map(filename):
 def draw_map(screen, map_data):
     for y, row in enumerate(map_data):
         for x, tile in enumerate(row):
-            print(x,tile,type(x),type(tile))
+            #print(x,tile,type(x),type(tile))
             screen.blit(tile_images[tile], (x * TILE_SIZE, y * TILE_SIZE))
 
 
