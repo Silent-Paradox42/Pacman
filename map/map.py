@@ -11,7 +11,7 @@ tile_images = {
     # 
     0: pygame.transform.scale( pygame.image.load("assets/tiles/tuchi.png"),(TILE_SIZE,TILE_SIZE)),
     1: pygame.transform.scale(pygame.image.load("assets/tiles/kabe_black.png"),(TILE_SIZE,TILE_SIZE)),
-    2: pygame.transform.scale(pygame.image.load("assets/tiles/item.png"),(TILE_SIZE,TILE_SIZE))
+    2: pygame.transform.scale(pygame.image.load("assets/tiles/item.png"),(TILE_SIZE/4,TILE_SIZE/4))
 }
 """ TILE_SIZE = 5  # 1マスのサイズを5pxに設定
 

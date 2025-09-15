@@ -1,13 +1,15 @@
 import pygame
-from player import Player as player
+from player import Player
+from map.map import load_map, draw_map
 import sys
 
 TILE_SIZE = 32
 SCREEN_WIDTH = 640
-SCREEN_HEIGHT = 480
+SCREEN_HEIGHT = 640
 
 # 仮のマップ（すべて通れる）
-game_map = [[0 for _ in range(SCREEN_WIDTH // TILE_SIZE)] for _ in range(SCREEN_HEIGHT // TILE_SIZE)]
+#game_map = [[0 for _ in range(SCREEN_WIDTH // TILE_SIZE)] for _ in range(SCREEN_HEIGHT // TILE_SIZE)]
+game_map = load_map("map/sample_stage.csv")
 
 # Pygame 初期化
 pygame.init()
@@ -15,7 +17,7 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Pacman Player Test")
 clock = pygame.time.Clock()
 
-player = player()
+player = Player()
 
 # メインループ
 running = True
@@ -25,7 +27,7 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-
+    draw_map(screen, game_map)
     player.update(game_map)
     player.draw(screen)
 
