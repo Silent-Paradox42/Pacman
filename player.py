@@ -30,4 +30,6 @@ class Player:
     def can_move_to(self, x, y, game_map):
         grid_x = x // TILE_SIZE
         grid_y = y // TILE_SIZE
-        return game_map[grid_y][grid_x] == 0  # 0なら通れる
+        if 0 <= grid_y < len(game_map) and 0 <= grid_x < len(game_map[0]):
+            return game_map[grid_y][grid_x] == 0
+        return False
