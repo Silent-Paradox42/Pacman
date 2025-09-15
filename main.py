@@ -1,62 +1,38 @@
-#import sys
-#print(sys.modules)
-
 import pygame
-import csv
 
-TILE_SIZE = 30
+# Initialize pygame
+pygame.init()
 
-# タイル画像の読み込み
-tile_images = {
-    # 
-    0: pygame.transform.scale( pygame.image.load("assets/tiles/tuchi.png"),(TILE_SIZE,TILE_SIZE)),
-    1: pygame.transform.scale(pygame.image.load("assets/tiles/kabe_black.png"),(TILE_SIZE,TILE_SIZE)),
-    2: pygame.transform.scale(pygame.image.load("assets/tiles/item.png"),(TILE_SIZE,TILE_SIZE))
-}
-""" TILE_SIZE = 5  # 1マスのサイズを5pxに設定
+# Set up screen dimensions
+SCREEN_WIDTH = 640
+SCREEN_HEIGHT = 480
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+pygame.display.set_caption("Pac-Man")
 
-tile_images = {
-    0: pygame.image.load("assets/tiles/dot.png"),
-    1: pygame.image.load("assets/tiles/wall.png"),
-    2: pygame.image.load("assets/tiles/power_dot.png")
-}
- """
+# Set up clock for controlling frame rate
+clock = pygame.time.Clock()
 
-
-# マップ読み込み関数
-def load_map(filename):
-    with open(filename, newline='') as csvfile:
-        reader = csv.reader(csvfile)
-        return [[int(cell) for cell in row] for row in reader]
-
-# マップ描画関数
-def draw_map(screen, map_data):
-    for y, row in enumerate(map_data):
-        for x, tile in enumerate(row):
-            print(x,tile,type(x),type(tile))
-            screen.blit(tile_images[tile], (x * TILE_SIZE, y * TILE_SIZE))
-
-# メイン処理
+# Main game loop
 def main():
-    pygame.init()
-    screen = pygame.display.set_mode((640, 480))
-    clock = pygame.time.Clock()
-
-    map_data = load_map("map/stage1.csv")
-
     running = True
     while running:
-        screen.fill((0, 0, 0))
-        draw_map(screen, map_data)
-
+        clock.tick(60)  # Limit to 60 frames per second
+        # Event handling
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
 
-        pygame.display.flip()
-        clock.tick(60)
+        # Fill the screen with black
+        screen.fill((0, 0, 0))
 
+        # TODO: Add player and map drawing here
+
+        # Update the display
+        pygame.display.update()
+
+    # Quit pygame
     pygame.quit()
 
+# Run the game
 if __name__ == "__main__":
     main()
