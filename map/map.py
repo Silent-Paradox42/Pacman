@@ -40,10 +40,10 @@ def draw_map(screen, map_data):
 # メイン処理
 def main():
     pygame.init()
-    screen = pygame.display.set_mode((640, 480))
+    screen = pygame.display.set_mode((640, 640))
     clock = pygame.time.Clock()
 
-    map_data = load_map("map/stage1.csv")
+    map_data = load_map("map/pacman_narrow_path.csv")
 
     running = True
     while running:

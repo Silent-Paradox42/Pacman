@@ -1,4 +1,5 @@
 import pygame
+import map.map as map
 
 # Initialize pygame
 pygame.init()
@@ -12,6 +13,8 @@ pygame.display.set_caption("Pac-Man")
 # Set up clock for controlling frame rate
 clock = pygame.time.Clock()
 
+
+
 # Main game loop
 def main():
     running = True
@@ -24,6 +27,8 @@ def main():
 
         # Fill the screen with black
         screen.fill((0, 0, 0))
+        map_data = map.load_map("map/pacman_narrow_path.csv")
+        map.draw_map(screen,map_data)
 
         # TODO: Add player and map drawing here
 
