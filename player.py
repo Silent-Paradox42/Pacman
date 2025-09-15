@@ -31,5 +31,3 @@ class Player:
         grid_x = x // TILE_SIZE
         grid_y = y // TILE_SIZE
         return game_map[grid_y][grid_x] == 0  # 0なら通れる
-    
-
