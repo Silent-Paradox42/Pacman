@@ -18,7 +18,7 @@ pygame.display.set_caption("Pacman Player Test")
 clock = pygame.time.Clock()
 
 player = Player("assets\\charactor\\pacman.png", 1*TILE_SIZE, 1*TILE_SIZE)
-enemy = Player("assets\\charactor\\Blinky.png", 5*TILE_SIZE, 5*TILE_SIZE)
+#enemy = Player("assets\\charactor\\Blinky.png", 5*TILE_SIZE, 5*TILE_SIZE)
 
 # メインループ
 running = True
