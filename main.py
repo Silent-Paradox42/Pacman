@@ -7,8 +7,6 @@ TILE_SIZE = 32
 SCREEN_WIDTH = 640
 SCREEN_HEIGHT = 640
 
-# 仮のマップ（すべて通れる）
-#game_map = [[0 for _ in range(SCREEN_WIDTH // TILE_SIZE)] for _ in range(SCREEN_HEIGHT // TILE_SIZE)]
 game_map = load_map("map/sample_stage.csv")
 
 # Pygame 初期化
