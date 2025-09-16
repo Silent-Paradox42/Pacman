@@ -1,7 +1,7 @@
 
 import pygame
 
-CHAR_SIZE = 20  
+CHAR_SIZE = 32;  
 
 # キャラクター画像の読み込み
 class charactor:

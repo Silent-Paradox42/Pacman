@@ -4,8 +4,8 @@ from map.map import load_map, draw_map
 import sys
 
 TILE_SIZE = 32
-SCREEN_WIDTH = 640
-SCREEN_HEIGHT = 640
+SCREEN_WIDTH = TILE_SIZE * 21
+SCREEN_HEIGHT = TILE_SIZE * 21
 
 game_map = load_map("map/sample_stage.csv")
 
@@ -15,7 +15,7 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Pacman Player Test")
 clock = pygame.time.Clock()
 
-player = Player("assets\\charactor\\pacman.png", 1*TILE_SIZE, 1*TILE_SIZE)
+player = Player("assets\\charactor\\pacman.png", 1 * TILE_SIZE, 1 * TILE_SIZE, game_map)
 #enemy = Player("assets\\charactor\\Blinky.png", 5*TILE_SIZE, 5*TILE_SIZE)
 
 # メインループ
