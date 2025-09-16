@@ -1,6 +1,6 @@
 import pygame
 from drowchar import charactor as character
-TILE_SIZE = 32  # マップの1マスのサイズ（仮）
+TILE_SIZE = 32  # マップの1マスのサイズ
 
 class Player(character):
     def __init__(self,img="assets\charactor\Trollman.png",x=1,y=1):

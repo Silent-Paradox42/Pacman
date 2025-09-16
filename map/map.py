@@ -4,7 +4,7 @@
 import pygame
 import csv
 
-TILE_SIZE = 30
+TILE_SIZE = 32 #map1マスのサイズ
 
 MAP_DATA={
     0:'map/pacman_stage.csv',
