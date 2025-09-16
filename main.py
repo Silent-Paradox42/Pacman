@@ -17,7 +17,8 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Pacman Player Test")
 clock = pygame.time.Clock()
 
-player = Player()
+player = Player("assets\\charactor\\pacman.png", 1*TILE_SIZE, 1*TILE_SIZE)
+enemy = Player("assets\\charactor\\Blinky.png", 5*TILE_SIZE, 5*TILE_SIZE)
 
 # メインループ
 running = True
@@ -29,7 +30,8 @@ while running:
             running = False
     draw_map(screen, game_map)
     player.update(game_map)
-    player.draw(screen)
+    #player.draw(screen)
+    player.draw_charactor(screen)
 
     pygame.display.flip()
     clock.tick(60)

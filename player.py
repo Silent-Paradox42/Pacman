@@ -1,11 +1,12 @@
 import pygame
-
+from drowchar import charactor as character
 TILE_SIZE = 32  # マップの1マスのサイズ（仮）
 
-class Player:
-    def __init__(self):
-        self.x = 100
-        self.y = 100
+class Player(character):
+    def __init__(self,img="assets\charactor\Trollman.png",x=1,y=1):
+        super().__init__(img,x,y)
+        self.x = x
+        self.y = y
         self.speed = 2
 
     def update(self, game_map):
@@ -33,3 +34,4 @@ class Player:
         if 0 <= grid_y < len(game_map) and 0 <= grid_x < len(game_map[0]):
             return game_map[grid_y][grid_x] == 0
         return False
+    
