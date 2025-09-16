@@ -1,13 +1,13 @@
 import pygame
 from player import Player
-from map.map import load_map, draw_map
+from map.map import MAP_DATA, load_map, draw_map
 import sys
 
 TILE_SIZE = 32
 SCREEN_WIDTH = TILE_SIZE * 21
 SCREEN_HEIGHT = TILE_SIZE * 21
 
-game_map = load_map("map/sample_stage.csv")
+game_map = load_map(MAP_DATA[90])
 
 # Pygame 初期化
 pygame.init()
