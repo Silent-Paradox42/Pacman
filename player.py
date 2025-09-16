@@ -15,6 +15,10 @@ class Player(character):
             self.x = 2 * TILE_SIZE
             self.y = 2 * TILE_SIZE
 
+    def is_aligned_to_tile(self):
+        margin = 4  # 許容誤差（px）
+        return abs((self.x % TILE_SIZE) - TILE_SIZE // 2) < margin and abs((self.y % TILE_SIZE) - TILE_SIZE // 2) < margin
+
     def update(self, game_map):
         keys = pygame.key.get_pressed()
         new_x, new_y = self.x, self.y
@@ -28,16 +32,16 @@ class Player(character):
         elif keys[pygame.K_DOWN]:
             new_y += self.speed
         
-        direction = (
-            'left' if keys[pygame.K_LEFT] else
-            'right' if keys[pygame.K_RIGHT] else
-            'up' if keys[pygame.K_UP] else
-            'down' if keys[pygame.K_DOWN] else
-            None
-        )
-
-        if direction:
-            self.update_direction(direction)
+        if self.is_aligned_to_tile():
+            direction = (
+                'left' if keys[pygame.K_LEFT] else
+                'right' if keys[pygame.K_RIGHT] else
+                'up' if keys[pygame.K_UP] else
+                'down' if keys[pygame.K_DOWN] else
+                None
+            )
+            if direction:
+                self.update_direction(direction)
 
         if self.can_move_to(new_x, new_y, game_map):
             self.x, self.y = new_x, new_y
