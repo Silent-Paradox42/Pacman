@@ -35,9 +35,21 @@ class Player(character):
         pygame.draw.circle(screen, (255, 255, 0), (self.x, self.y), 10)
 
     def can_move_to(self, x, y, game_map):
-        grid_x = x // TILE_SIZE
-        grid_y = y // TILE_SIZE
-        if 0 <= grid_y < len(game_map) and 0 <= grid_x < len(game_map[0]):
-            return game_map[grid_y][grid_x] in [0, 2]
-        return False
-    
+        CHAR_SIZE = TILE_SIZE  # または self.image.get_width() などで取得
+
+        corners = [
+            (x, y),  # 左上
+            (x + CHAR_SIZE - 1, y),  # 右上
+            (x, y + CHAR_SIZE - 1),  # 左下
+            (x + CHAR_SIZE - 1, y + CHAR_SIZE - 1)  # 右下
+        ]
+
+        for cx, cy in corners:
+            grid_x = cx // TILE_SIZE
+            grid_y = cy // TILE_SIZE
+            if not (0 <= grid_y < len(game_map) and 0 <= grid_x < len(game_map[0])):
+                return False
+            if game_map[grid_y][grid_x] not in [0, 2]:
+                return False
+
+        return True
