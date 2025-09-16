@@ -44,5 +44,6 @@ class charactor:
             self.image = pygame.transform.flip(img, True, False)
         elif direction == 'right':
             self.image = img
-            self.current_direction = direction
+        
+        self.current_direction = direction
             
