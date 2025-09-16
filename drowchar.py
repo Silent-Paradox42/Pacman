@@ -14,15 +14,14 @@ class charactor:
         self.original_image = self.image.copy()
         self.current_direction = 'right'
     
+    #キャラクター描画
     def draw_charactor(self, screen):
         #print(self.image ,self.x,self.y)
         print(screen)
         print(self.image)
         screen.blit(self.image, (self.x, self.y))
 
-
-    # self.original_image = ...  # 初期画像を保持する変数
-    # self.current_direction = ...  # 現在の向きを保持する変数
+    #移動方向への画像回転・反転
     def update_direction(self, direction):
         """
         direction: 'up', 'down', 'left', 'right'

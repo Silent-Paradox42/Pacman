@@ -29,6 +29,8 @@ class Enemy(charactor):
         else:
             # 壁にぶつかったら方向をランダムに変更
             self.direction = random.choice(["left", "right", "up", "down"])
+        #進行方向への画像回転・反転
+        self.update_direction(self.direction)
 
     def draw(self, screen):
         self.draw_charactor(screen)
