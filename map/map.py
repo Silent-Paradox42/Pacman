@@ -7,10 +7,11 @@ import csv
 TILE_SIZE = 32 #map1マスのサイズ
 
 MAP_DATA={
-    0:'map/pacman_stage.csv',
-    1:'map/sample_stage.csv',
-    2:'map/sample_stage2.csv',
+    1:'map/stage.csv',
+    2:'map/stage2.csv',
     3:'map/sample_stage3.csv',
+    90:'map/pacman_stage.csv',
+    91:'map/sample_stage.csv',
 }
 
 # タイル画像の読み込み
