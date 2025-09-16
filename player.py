@@ -27,6 +27,14 @@ class Player(character):
             new_y -= self.speed
         elif keys[pygame.K_DOWN]:
             new_y += self.speed
+        
+        character.update_direction(self,
+            'left' if keys[pygame.K_LEFT] else
+            'right' if keys[pygame.K_RIGHT] else
+            'up' if keys[pygame.K_UP] else
+            'down' if keys[pygame.K_DOWN] else
+            None
+        )
 
         if self.can_move_to(new_x, new_y, game_map):
             self.x, self.y = new_x, new_y
