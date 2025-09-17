@@ -68,10 +68,11 @@ while running:
 
     # プレイヤーと敵の状態更新
     player.update(game_map)
-    enemy.update(game_map)
-    enemy2.update(game_map)
-    enemy3.update(game_map)
-    enemy4.update(game_map)
+    player_pos = (player.x, player.y)
+    enemy.update(game_map, player_pos)
+    enemy2.update(game_map, player_pos)
+    enemy3.update(game_map, player_pos)
+    enemy4.update(game_map, player_pos)
 
     # キャラクター描画
     player.draw_charactor(screen)

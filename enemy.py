@@ -26,33 +26,83 @@ class Enemy(charactor):
         self.direction = random.choice(["left", "right", "up", "down"])
         self.was_at_branch = False  # 前フレームで分岐点だったか
 
-    def update(self, game_map):
+    def update(self, game_map, player_pos=None):
         """
         毎フレーム呼ばれる。敵キャラの移動・方向転換ロジック。
         分岐点ではランダムに方向転換し、壁にぶつかった場合はUターンも許可。
         """
-        # 進行可能な方向を調べる
-        directions = []
-        for d, (dx, dy) in {
-            "left": (-self.speed, 0),
-            "right": (self.speed, 0),
-            "up": (0, -self.speed),
-            "down": (0, self.speed)
-        }.items():
-            nx, ny = self.x + dx, self.y + dy
-            if self.can_move_to(nx, ny, game_map):
-                directions.append(d)
 
-        # Uターン方向を除外（進行方向の逆は候補から外す）
-        opposite = {"left": "right", "right": "left", "up": "down", "down": "up"}
-        candidate_dirs = [d for d in directions if d != opposite.get(self.direction)]
-
-        # 分岐点（進行可能な方向が2つ以上）なら毎回ランダムで方向転換
-        if len(directions) >= 2 and candidate_dirs:
-            self.direction = random.choice(candidate_dirs)
-        elif self.direction not in directions and directions:
-            # 進行方向が塞がれている場合はUターンも許可
-            self.direction = random.choice(directions)
+        # プレイヤーが近い場合は追いかける
+        if player_pos is not None:
+            px, py = player_pos
+            ex, ey = self.x, self.y
+            dist = abs((px - ex) // TILE_SIZE) + abs((py - ey) // TILE_SIZE)
+            if dist <= 5:
+                # 進行可能な方向を調べて最短方向を選ぶ
+                directions = []
+                for d, (dx, dy) in {
+                    "left": (-self.speed, 0),
+                    "right": (self.speed, 0),
+                    "up": (0, -self.speed),
+                    "down": (0, self.speed)
+                }.items():
+                    nx, ny = self.x + dx, self.y + dy
+                    if self.can_move_to(nx, ny, game_map):
+                        directions.append((d, nx, ny))
+                # 最短距離になる方向を選ぶ
+                min_dist = float('inf')
+                best_dirs = []
+                for d, nx, ny in directions:
+                    dval = abs((px - nx) // TILE_SIZE) + abs((py - ny) // TILE_SIZE)
+                    if dval < min_dist:
+                        min_dist = dval
+                        best_dirs = [d]
+                    elif dval == min_dist:
+                        best_dirs.append(d)
+                if best_dirs:
+                    # 進行方向の逆は除外
+                    opposite = {"left": "right", "right": "left", "up": "down", "down": "up"}
+                    candidate_dirs = [d for d in best_dirs if d != opposite.get(self.direction)]
+                    if candidate_dirs:
+                        self.direction = random.choice(candidate_dirs)
+                    else:
+                        self.direction = random.choice(best_dirs)
+            else:
+                # 通常のランダム分岐ロジック
+                directions = []
+                for d, (dx, dy) in {
+                    "left": (-self.speed, 0),
+                    "right": (self.speed, 0),
+                    "up": (0, -self.speed),
+                    "down": (0, self.speed)
+                }.items():
+                    nx, ny = self.x + dx, self.y + dy
+                    if self.can_move_to(nx, ny, game_map):
+                        directions.append(d)
+                opposite = {"left": "right", "right": "left", "up": "down", "down": "up"}
+                candidate_dirs = [d for d in directions if d != opposite.get(self.direction)]
+                if len(directions) >= 2 and candidate_dirs:
+                    self.direction = random.choice(candidate_dirs)
+                elif self.direction not in directions and directions:
+                    self.direction = random.choice(directions)
+        else:
+            # 通常のランダム分岐ロジック
+            directions = []
+            for d, (dx, dy) in {
+                "left": (-self.speed, 0),
+                "right": (self.speed, 0),
+                "up": (0, -self.speed),
+                "down": (0, self.speed)
+            }.items():
+                nx, ny = self.x + dx, self.y + dy
+                if self.can_move_to(nx, ny, game_map):
+                    directions.append(d)
+            opposite = {"left": "right", "right": "left", "up": "down", "down": "up"}
+            candidate_dirs = [d for d in directions if d != opposite.get(self.direction)]
+            if len(directions) >= 2 and candidate_dirs:
+                self.direction = random.choice(candidate_dirs)
+            elif self.direction not in directions and directions:
+                self.direction = random.choice(directions)
 
         # 今の方向に進む（進めなければその場で止まる）
         dx, dy = 0, 0
