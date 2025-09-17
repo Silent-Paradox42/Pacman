@@ -29,9 +29,24 @@ class Player(character):
         self.stuck = False   # 完全停止状態かどうか
 
         if game_map and not self.can_move_to(x, y, game_map):
-            print("⚠️ 初期位置が壁です。安全な位置に移動します。")
-            self.x = 2 * TILE_SIZE
-            self.y = 2 * TILE_SIZE
+            # tkinterのメッセージボックスで警告を表示（画面サイズを変更しない）
+            import tkinter
+            from tkinter import messagebox
+            root = tkinter.Tk()
+            root.withdraw()
+            messagebox.showwarning("警告", "初期位置が壁です！通路に自動修正します。")
+            root.destroy()
+            # マップ内の最初の通路マス（0,2）を探して移動
+            found = False
+            for gy, row in enumerate(game_map):
+                for gx, cell in enumerate(row):
+                    if cell in [0, 2]:
+                        self.x = gx * TILE_SIZE
+                        self.y = gy * TILE_SIZE
+                        found = True
+                        break
+                if found:
+                    break
 
         self.update_direction(self.direction)
 

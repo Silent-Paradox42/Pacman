@@ -25,7 +25,8 @@ pygame.display.set_caption("Pacman Player and Enemy Test")
 clock = pygame.time.Clock()
 
 # プレイヤー初期化
-player = Player("assets\\charactor\\pacman.png", 1 * TILE_SIZE, 1 * TILE_SIZE, game_map)  # プレイヤー生成
+#player = Player("assets\\charactor\\pacman.png", 1 * TILE_SIZE, 1 * TILE_SIZE, game_map)  # プレイヤー生成
+player = Player("assets\\charactor\\pacman.png", 0 * TILE_SIZE, 0 * TILE_SIZE, game_map) #初期座標テストコード
 
 # --- 敵キャラの自動配置 ---
 # 通路マス（2）の座標をリストアップ
