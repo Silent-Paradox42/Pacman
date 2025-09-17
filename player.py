@@ -8,46 +8,40 @@ class Player(character):
         self.x = x
         self.y = y
         self.speed = 2
+        self.direction = "right"  # ← これを追加！
 
-        # 初期位置が壁なら安全な位置に移動
         if game_map and not self.can_move_to(x, y, game_map):
             print("⚠️ 初期位置が壁です。安全な位置に移動します。")
             self.x = 2 * TILE_SIZE
             self.y = 2 * TILE_SIZE
 
+        self.update_direction(self.direction)
+
     def is_aligned_to_tile(self):
-        margin = 4  # 許容誤差（px）
+        margin = 6  # 許容誤差（px）
         return abs((self.x % TILE_SIZE) - TILE_SIZE // 2) < margin and abs((self.y % TILE_SIZE) - TILE_SIZE // 2) < margin
 
+    def set_direction(self, direction):
+        self.direction = direction
+        self.update_direction(direction)
+
     def update(self, game_map):
-        keys = pygame.key.get_pressed()
         new_x, new_y = self.x, self.y
 
-        if keys[pygame.K_LEFT]:
+        if self.direction == "left":
             new_x -= self.speed
-        elif keys[pygame.K_RIGHT]:
+        elif self.direction == "right":
             new_x += self.speed
-        elif keys[pygame.K_UP]:
+        elif self.direction == "up":
             new_y -= self.speed
-        elif keys[pygame.K_DOWN]:
+        elif self.direction == "down":
             new_y += self.speed
-        
-        if self.is_aligned_to_tile():
-            direction = (
-                'left' if keys[pygame.K_LEFT] else
-                'right' if keys[pygame.K_RIGHT] else
-                'up' if keys[pygame.K_UP] else
-                'down' if keys[pygame.K_DOWN] else
-                None
-            )
-            if direction:
-                self.update_direction(direction)
 
         if self.can_move_to(new_x, new_y, game_map):
             self.x, self.y = new_x, new_y
 
     def draw(self, screen):
-        pygame.draw.circle(screen, (255, 255, 0), (self.x, self.y), 10)
+        self.draw_charactor(screen)
 
     def can_move_to(self, x, y, game_map):
         CHAR_SIZE = TILE_SIZE  # または self.image.get_width() などで取得

@@ -33,6 +33,15 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_LEFT:
+                player.set_direction("left")
+            elif event.key == pygame.K_RIGHT:
+                player.set_direction("right")
+            elif event.key == pygame.K_UP:
+                player.set_direction("up")
+            elif event.key == pygame.K_DOWN:
+                player.set_direction("down")
 
     # マップ描画
     draw_map(screen, game_map)

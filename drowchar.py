@@ -6,31 +6,23 @@ CHAR_SIZE = 32;
 # キャラクター画像の読み込み
 class charactor:
     def __init__(self, pict, x=1, y=1):
-        print(pict)
+        #print(pict)
         self.image = pygame.transform.scale(pygame.image.load(pict), (CHAR_SIZE, CHAR_SIZE))
         self.x = x
         self.y = y
-        print(self.image)
+        #print(self.image)
         self.original_image = self.image.copy()
         self.current_direction = 'right'
     
     #キャラクター描画
     def draw_charactor(self, screen):
         #print(self.image ,self.x,self.y)
-        print(screen)
-        print(self.image)
+        #print(screen)
+        #print(self.image)
         screen.blit(self.image, (self.x, self.y))
 
     #移動方向への画像回転・反転
     def update_direction(self, direction):
-        """
-        direction: 'up', 'down', 'left', 'right'
-        """
-        if not hasattr(self, 'original_image'):
-            self.original_image = self.image.copy()
-            self.current_direction = 'right'
-
-        # 回転・反転が必要な場合のみ処理
         if direction == self.current_direction:
             return
 
@@ -38,11 +30,11 @@ class charactor:
         if direction == 'up':
             self.image = pygame.transform.rotate(img, 90)
         elif direction == 'down':
-            self.image = pygame.transform.rotate(img, -90)
+            self.image = pygame.transform.rotate(img, 270)
         elif direction == 'left':
             self.image = pygame.transform.flip(img, True, False)
         elif direction == 'right':
-            self.image = img
-        
+            self.image = img.copy()
+
         self.current_direction = direction
             
