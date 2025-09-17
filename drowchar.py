@@ -1,28 +1,41 @@
-
+"""
+キャラクターの基底クラスを定義するモジュール。
+画像の読み込み・描画・向き変更など共通処理を提供。
+"""
 import pygame
 
-CHAR_SIZE = 32;  
+CHAR_SIZE = 32  # キャラクター画像のサイズ(px)
 
-# キャラクター画像の読み込み
 class charactor:
+    """
+    キャラクターの基底クラス。
+    プレイヤー・敵などの共通処理（画像管理・描画・向き変更）を持つ。
+    """
     def __init__(self, pict, x=1, y=1):
-        #print(pict)
+        """
+        キャラクター画像の読み込み・初期化。
+        :param pict: 画像ファイルパス
+        :param x: 初期x座標
+        :param y: 初期y座標
+        """
         self.image = pygame.transform.scale(pygame.image.load(pict), (CHAR_SIZE, CHAR_SIZE))
         self.x = x
         self.y = y
-        #print(self.image)
-        self.original_image = self.image.copy()
-        self.current_direction = 'right'
-    
-    #キャラクター描画
+        self.original_image = self.image.copy()  # 回転・反転前の元画像
+        self.current_direction = 'right'  # 現在の向き
+
     def draw_charactor(self, screen):
-        #print(self.image ,self.x,self.y)
-        #print(screen)
-        #print(self.image)
+        """
+        キャラクター画像を画面に描画する。
+        :param screen: pygameのSurface
+        """
         screen.blit(self.image, (self.x, self.y))
 
-    #移動方向への画像回転・反転
     def update_direction(self, direction):
+        """
+        キャラクター画像を進行方向に合わせて回転・反転する。
+        :param direction: 新しい進行方向
+        """
         if direction == self.current_direction:
             return
 

@@ -1,11 +1,14 @@
-#import sys
-#print(sys.modules)
+
+# マップデータの管理・描画・読み込みを行うモジュール
 
 import pygame
 import csv
 
-TILE_SIZE = 32 #map1マスのサイズ
 
+TILE_SIZE = 32 # map1マスのサイズ
+
+
+# マップIDと対応するCSVファイルパスの辞書
 MAP_DATA={
     1:'map/stage.csv',
     2:'map/stage2.csv',
@@ -14,35 +17,46 @@ MAP_DATA={
     91:'map/sample_stage.csv',
 }
 
-# タイル画像の読み込み
+
+# タイル画像の読み込み（地面・壁・アイテム）
 tile_images = {
-    # 
     'load': pygame.transform.scale( pygame.image.load("assets/tiles/tuchi.png"),(TILE_SIZE,TILE_SIZE)),
     'wall': pygame.transform.scale(pygame.image.load("assets/tiles/kabe_black.png"),(TILE_SIZE,TILE_SIZE)),
     'dot': pygame.transform.scale(pygame.image.load("assets/tiles/item.png"),(TILE_SIZE/4,TILE_SIZE/4))
 }
 
-# マップ読み込み関数
+
 def load_map(filename):
+    """
+    CSVファイルからマップデータを読み込む。
+    :param filename: マップCSVファイルパス
+    :return: 2次元リスト（int型）
+    """
     with open(filename, newline='') as csvfile:
         reader = csv.reader(csvfile)
         return [[int(cell) for cell in row] for row in reader]
 
-# マップ描画関数
+
 def draw_map(screen, map_data):
+    """
+    マップデータをもとに画面にタイル画像を描画する。
+    :param screen: pygameのSurface
+    :param map_data: 2次元リストのマップデータ
+    """
     for y, row in enumerate(map_data):
         for x, tile in enumerate(row):
             if tile in [0,2]:
                 screen.blit(tile_images['load'], (x * TILE_SIZE, y * TILE_SIZE))
-            
             if tile == 1:
                 screen.blit(tile_images['wall'], (x * TILE_SIZE, y * TILE_SIZE))
-            
             if tile == 2:
                 screen.blit(tile_images['dot'], (x * TILE_SIZE + TILE_SIZE/2 - TILE_SIZE/8, y * TILE_SIZE + TILE_SIZE/2 - TILE_SIZE/8))
 
-# メイン処理
+
 def main():
+    """
+    単体テスト用のメイン処理。マップのみを表示する。
+    """
     pygame.init()
     screen = pygame.display.set_mode((640, 640))
     clock = pygame.time.Clock()
