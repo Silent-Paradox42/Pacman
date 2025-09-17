@@ -84,27 +84,10 @@ class Player(character):
                 self.update_direction(self.direction)
                 self.wait_count = 0
                 return
-            # 2秒経過（wait_max到達）したら自動でUターン
+            # 2秒経過（wait_max到達）したら必ず完全停止（stuck）
             if self.wait_count >= self.wait_max:
-                if self.next_direction == self.direction:
-                    opposite = {"left": "right", "right": "left", "up": "down", "down": "up"}
-                    self.direction = opposite.get(self.direction, self.direction)
-                    self.update_direction(self.direction)
-                # Uターン後、進めなければ完全停止（stuck）
-                new_x2, new_y2 = self.x, self.y
-                if self.direction == "left":
-                    new_x2 -= self.speed
-                elif self.direction == "right":
-                    new_x2 += self.speed
-                elif self.direction == "up":
-                    new_y2 -= self.speed
-                elif self.direction == "down":
-                    new_y2 += self.speed
-                if self.can_move_to(new_x2, new_y2, game_map):
-                    self.wait_count = 0
-                else:
-                    self.stuck = True
-                    self.wait_count = 0
+                self.stuck = True
+                self.wait_count = 0
                 return
 
         # 通常時：希望方向に進めるなら進行方向を切り替える
@@ -128,8 +111,9 @@ class Player(character):
             self.x, self.y = new_x, new_y
             self.wait_count = 0
         else:
-            # 壁にぶつかったら待機開始
-            self.wait_count = 1
+            # 壁にぶつかったら即座に完全停止
+            self.stuck = True
+            self.wait_count = 0
 
     def draw(self, screen):
         """

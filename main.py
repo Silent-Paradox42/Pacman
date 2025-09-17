@@ -24,10 +24,6 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Pacman Player and Enemy Test")
 clock = pygame.time.Clock()
 
-
-
-
-
 # プレイヤー初期化
 player = Player("assets\\charactor\\pacman.png", 1 * TILE_SIZE, 1 * TILE_SIZE, game_map)  # プレイヤー生成
 
