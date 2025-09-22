@@ -16,6 +16,8 @@ class Player(character):
         :param x: 初期x座標
         :param y: 初期y座標
         :param game_map: マップデータ
+        :param lifes: 初期ライフ数
+        :param score: 初期スコア
         """
         super().__init__(img, x, y)
         self.x = x
@@ -27,6 +29,9 @@ class Player(character):
         self.wait_count = 0  # 壁にぶつかった時の待機カウンタ
         self.wait_max = 10   # 何フレーム待つか（調整可）
         self.stuck = False   # 完全停止状態かどうか
+
+        self.score = 0       # スコア
+        self.lifes = 3       # ライフ数
 
         if game_map and not self.can_move_to(x, y, game_map):
             # tkinterのメッセージボックスで警告を表示（画面サイズを変更しない）
@@ -170,3 +175,30 @@ class Player(character):
         if 0 <= tile_y < len(game_map) and 0 <= tile_x < len(game_map[0]):
             if game_map[tile_y][tile_x] == 2:
                 game_map[tile_y][tile_x] = 0
+                self.score += 10  # スコア加算
+
+    def get_score(self):
+        """
+        現在のスコアを取得。
+        :return: スコア
+        """
+        return self.score
+    
+    def get_lifes(self):
+        """
+        現在のライフを取得。
+        :return: ライフ
+        """
+        return self.lifes
+    def add_score(self, points):
+        """
+        スコアを加算。
+        """
+        self.score += points
+
+    def lost_life(self):
+        """
+        ライフを1減らす。
+        """
+        if self.lifes > 0:
+            self.lifes -= 1

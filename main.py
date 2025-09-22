@@ -84,7 +84,7 @@ while running:
     enemy2.update(game_map, player_pos)
     enemy3.update(game_map, player_pos)
     enemy4.update(game_map, player_pos)
-    
+
     # キャラクター描画
     player.draw_charactor(screen)
     enemy.draw(screen)
@@ -93,7 +93,7 @@ while running:
     enemy4.draw(screen)
 
     #Uiの描画
-    ui.draw(screen)
+    ui.draw(screen,player.get_score(),player.get_lifes())
 
     # 画面更新
     pygame.display.flip()
