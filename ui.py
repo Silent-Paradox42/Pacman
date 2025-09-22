@@ -5,40 +5,24 @@ import sys
 
 class GameUi():
     def __init__(self):
-        # スコアとライフの初期化(別途用意があるなら削除)
-        self.score = 0
-        self.lives = 3
-
-    #スコアの加算処理
-    def add_score(self, points):
-        self.score += points
-
-    #ライフの減算処理
-    def lose_life(self):
-        if self.lives > 0:
-            self.lives -= 1
+        pass
 
     #スコアとライフの描画処理
-    def draw(self, screen):
+    def draw(self, screen, score=0, lives=3):
         #font = pygame.font.SysFont("Wide Latin", 20)
         font = pygame.font.SysFont("Snap ITC", 18)
-        text = font.render(f"Score: {self.score}    Life : {self.lives}", True, (255, 255, 255))
+        text = font.render(f"Score: {score}    Life : {lives}", True, (255, 255, 255))
         screen.blit(text,(10,10))
 
-    #状態リセット処理
-    def reset(self):
-        self.score = 0
-        self.lives = 3
-
     #ゲームオーバー判定(仮)
-    def is_game_over(self):
-        return self.lives <= 0
+    def is_game_over(self,lives):
+        return lives <= 0
 
 class StartMenu():
     def __init__(self, screen):
         self.screen = screen
-        self.font = pygame.font.SysFont("hg正楷書体pro", 48)
-        self.small_font = pygame.font.SysFont("hg正楷書体pro", 24)
+        self.font = pygame.font.SysFont("yumincho", 48)
+        self.small_font = pygame.font.SysFont("yumincho", 24)
 
     def draw(self):
         self.screen.fill((0, 0, 50))  # ダークブルー背景
