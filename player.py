@@ -33,6 +33,9 @@ class Player(character):
         self.score = 0       # スコア
         self.lifes = 3       # ライフ数
 
+        self.start_x = self.x # 初期位置を保存
+        self.start_y = self.y # 初期位置を保存
+
         if game_map and not self.can_move_to(x, y, game_map):
             # tkinterのメッセージボックスで警告を表示（画面サイズを変更しない）
             import tkinter
@@ -176,6 +179,15 @@ class Player(character):
             if game_map[tile_y][tile_x] == 2:
                 game_map[tile_y][tile_x] = 0
                 self.score += 10  # スコア加算
+
+    def reset_position(self):
+        """
+        プレイヤーを初期位置にリセット。
+        """
+        self.x = self.start_x
+        self.y = self.start_y
+        self.stuck = False
+        self.wait_count = 0
 
     def get_score(self):
         """

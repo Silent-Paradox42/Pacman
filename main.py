@@ -13,10 +13,13 @@ TILE_SIZE = 32  # 1マスのサイズ
 SCREEN_WIDTH = TILE_SIZE * 21  # 画面幅
 SCREEN_HEIGHT = TILE_SIZE * 21  # 画面高さ
 
+# ドットがすべて消えたか判定する関数
+def all_dots_cleared(map_data):
+    return all(2 not in row for row in map_data)
 
 # マップ読み込み（MAP_DATA[90] が存在しない場合は最初のマップを使用）
 map_file = MAP_DATA.get(90, next(iter(MAP_DATA.values())))
-game_map = load_map(map_file)
+game_map, original_map = load_map(map_file)
 
 
 # Pygame 初期化
@@ -79,6 +82,12 @@ while running:
     # プレイヤーと敵の状態更新
     player.update(game_map)
     player.check_dot_and_clear(game_map)
+
+    if all_dots_cleared(game_map):
+        import copy
+        game_map = copy.deepcopy(original_map)  # オリジナルのマップデータをコピーしてリセット
+        player.reset_position()
+        
     player_pos = (player.x, player.y)
     enemy.update(game_map, player_pos)
     enemy2.update(game_map, player_pos)

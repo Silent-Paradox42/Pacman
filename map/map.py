@@ -3,7 +3,7 @@
 
 import pygame
 import csv
-
+import copy
 
 TILE_SIZE = 32 # map1マスのサイズ
 
@@ -34,8 +34,9 @@ def load_map(filename):
     """
     with open(filename, newline='') as csvfile:
         reader = csv.reader(csvfile)
-        return [[int(cell) for cell in row] for row in reader]
-
+        MAP_DATA = [[int(cell) for cell in row] for row in reader]
+        original_map = copy.deepcopy(MAP_DATA)  # オリジナルのマップデータを保存
+        return MAP_DATA, original_map
 
 def draw_map(screen, map_data):
     """
