@@ -69,6 +69,7 @@ while running:
 
     # プレイヤーと敵の状態更新
     player.update(game_map)
+    player.check_dot_and_clear(game_map)
     player_pos = (player.x, player.y)
     enemy.update(game_map, player_pos)
     enemy2.update(game_map, player_pos)

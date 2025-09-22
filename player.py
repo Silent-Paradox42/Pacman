@@ -160,3 +160,13 @@ class Player(character):
                 return False
 
         return True
+
+    def check_dot_and_clear(self, game_map):
+        """
+        プレイヤーがドットの上にいる場合、ドットを消す。
+        """
+        tile_x = self.x // TILE_SIZE
+        tile_y = self.y // TILE_SIZE
+        if 0 <= tile_y < len(game_map) and 0 <= tile_x < len(game_map[0]):
+            if game_map[tile_y][tile_x] == 2:
+                game_map[tile_y][tile_x] = 0
