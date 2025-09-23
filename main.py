@@ -12,19 +12,20 @@ from map.map import MAP_DATA, load_map, draw_map
 TILE_SIZE = 32  # 1マスのサイズ
 SCREEN_WIDTH = TILE_SIZE * 21  # 画面幅
 SCREEN_HEIGHT = TILE_SIZE * 21  # 画面高さ
+SCREEN_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
 
 # ドットがすべて消えたか判定する関数
 def all_dots_cleared(map_data):
     return all(2 not in row for row in map_data)
 
 # マップ読み込み（MAP_DATA[90] が存在しない場合は最初のマップを使用）
-map_file = MAP_DATA.get(90, next(iter(MAP_DATA.values())))
+map_file = MAP_DATA.get(91, next(iter(MAP_DATA.values())))
 game_map, original_map = load_map(map_file)
 
 
 # Pygame 初期化
 pygame.init()
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+screen = pygame.display.set_mode(SCREEN_SIZE)
 pygame.display.set_caption("Pacman Player and Enemy Test")
 clock = pygame.time.Clock()
 
@@ -45,7 +46,7 @@ player = Player("assets\\charactor\\conkichi01.png", 0 * TILE_SIZE, 0 * TILE_SIZ
 enemy_positions = []
 for y, row in enumerate(game_map):
     for x, cell in enumerate(row):
-        if cell == 2:
+        if cell == 2 or cell == 0:
             enemy_positions.append((x, y))
 # できるだけ中央付近から4つ選ぶ
 center = (len(game_map[0]) // 2, len(game_map) // 2)
