@@ -2,7 +2,8 @@
 # ゲームのメイン処理を行うモジュール
 import pygame
 import sys
-from ui import GameUi, StartMenu
+import ui as Ui
+#from ui import GameUi, StartMenu
 from player import Player
 from enemy import Enemy
 from map.map import MAP_DATA, load_map, draw_map
@@ -30,12 +31,12 @@ pygame.display.set_caption("Pacman Player and Enemy Test")
 clock = pygame.time.Clock()
 
 # uiの初期化
-ui = GameUi()
+ui = Ui.GameUi()
+menu = Ui.StartMenu(SCREEN_SIZE)
+go = Ui.GameOverMenu(SCREEN_SIZE)
 
 # スタートメニューの表示
-menu = StartMenu(screen)
-menu.draw()
-menu.wait_for_start()
+menu.draw(screen)
 
 # プレイヤー初期化
 #player = Player("assets\\charactor\\pacman.png", 1 * TILE_SIZE, 1 * TILE_SIZE, game_map)  # プレイヤー生成
@@ -115,7 +116,16 @@ while running:
         enemy2.draw(screen)
         enemy3.draw(screen)
         enemy4.draw(screen)
+
         ui.draw(screen, player.get_score(), player.get_lifes())
+
+        #game over判定
+        if player.get_lifes() <= 0:
+            go.draw(screen)
+            player.reset_state()
+            game_map = original_map
+            player.reset_position()
+
 
     # 画面更新
     pygame.display.flip()

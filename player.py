@@ -20,8 +20,8 @@ class Player(character):
         :param score: 初期スコア
         """
         super().__init__(img, x, y)
-        self.x = x
-        self.y = y
+        #self.x = x
+        #self.y = y
         self.speed = 2
         self.direction = "right"  # 現在の進行方向
         self.next_direction = "right"  # 希望方向（キー入力でセット）
@@ -244,3 +244,14 @@ class Player(character):
                 self.hit_flash_timer = pygame.time.get_ticks()
                 self.hit_flash_count = 0
                 break
+    def reset_state(self):
+        """
+        スコアとライフを初期化。
+        """
+        self.score = 0
+        self.lifes = 3
+        self.reset_position()
+        self.invincible = False
+        self.hit_flash = False
+        self.stuck = False
+        self.wait_count = 0
