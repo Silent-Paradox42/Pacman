@@ -10,7 +10,7 @@ TILE_SIZE = 32 # map1マスのサイズ
 
 # マップIDと対応するCSVファイルパスの辞書
 MAP_DATA={
-    1:'map/stage.csv',
+    1:'map/stage1.csv',
     2:'map/stage2.csv',
     3:'map/sample_stage3.csv',
     90:'map/pacman_stage.csv',
