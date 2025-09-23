@@ -2,7 +2,7 @@
 # プレイヤーキャラクターの挙動を定義するモジュール
 import pygame
 from drowchar import charactor as character
-TILE_SIZE = 32  # マップの1マスのサイズ
+from constant import constant as const
 
 class Player(character):
     """
@@ -33,8 +33,8 @@ class Player(character):
         self.score = 0       # スコア
         self.lifes = 3       # ライフ数
 
-        self.x = x * TILE_SIZE
-        self.y = y * TILE_SIZE
+        self.x = x * const.TILE_SIZE
+        self.y = y * const.TILE_SIZE
 
         self.start_x = self.x
         self.start_y = self.y
@@ -58,8 +58,8 @@ class Player(character):
             for gy, row in enumerate(game_map):
                 for gx, cell in enumerate(row):
                     if cell in [0, 2]:
-                        self.x = gx * TILE_SIZE
-                        self.y = gy * TILE_SIZE
+                        self.x = gx * const.TILE_SIZE
+                        self.y = gy * const.TILE_SIZE
                         self.start_x = self.x
                         self.start_y = self.y
                         found = True
@@ -75,7 +75,7 @@ class Player(character):
         :return: Trueなら中心付近
         """
         margin = 12  # 許容誤差（px）
-        return abs((self.x % TILE_SIZE) - TILE_SIZE // 2) < margin and abs((self.y % TILE_SIZE) - TILE_SIZE // 2) < margin
+        return abs((self.x % const.TILE_SIZE) - const.TILE_SIZE // 2) < margin and abs((self.y % const.TILE_SIZE) - const.TILE_SIZE // 2) < margin
 
     def set_direction(self, direction):
         """
@@ -161,7 +161,7 @@ class Player(character):
         キャラの4隅が通路(0,2)上にあるかチェック。
         :return: Trueなら移動可能
         """
-        CHAR_SIZE = TILE_SIZE  # または self.image.get_width() などで取得
+        CHAR_SIZE = const.TILE_SIZE  # または self.image.get_width() などで取得
 
         corners = [
             (x, y),  # 左上
@@ -171,8 +171,8 @@ class Player(character):
         ]
 
         for cx, cy in corners:
-            grid_x = cx // TILE_SIZE
-            grid_y = cy // TILE_SIZE
+            grid_x = cx // const.TILE_SIZE
+            grid_y = cy // const.TILE_SIZE
             if not (0 <= grid_y < len(game_map) and 0 <= grid_x < len(game_map[0])):
                 return False
             if game_map[grid_y][grid_x] not in [0, 2]:
@@ -184,8 +184,8 @@ class Player(character):
         """
         プレイヤーがドットの上にいる場合、ドットを消す。
         """
-        tile_x = self.x // TILE_SIZE
-        tile_y = self.y // TILE_SIZE
+        tile_x = self.x // const.TILE_SIZE
+        tile_y = self.y // const.TILE_SIZE
         if 0 <= tile_y < len(game_map) and 0 <= tile_x < len(game_map[0]):
             if game_map[tile_y][tile_x] == 2:
                 game_map[tile_y][tile_x] = 0
@@ -199,6 +199,8 @@ class Player(character):
         self.y = self.start_y # 初期位置にリセット
         self.stuck = False
         self.wait_count = 0
+        self.direction = "right"  # 現在の進行方向
+        self.next_direction = "right"  # 希望方向（キー入力でセット）
 
     def get_score(self):
         """
@@ -236,7 +238,7 @@ class Player(character):
         for enemy in enemies:
             dx = abs(self.x - enemy.x)
             dy = abs(self.y - enemy.y)
-            if dx < TILE_SIZE // 2 and dy < TILE_SIZE // 2:
+            if dx < const.TILE_SIZE // 2 and dy < const.TILE_SIZE // 2:
                 self.lost_life()
                 self.invincible = True
                 self.invincible_timer = pygame.time.get_ticks()

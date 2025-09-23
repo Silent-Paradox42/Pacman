@@ -3,15 +3,15 @@
 import pygame
 import random
 from drowchar import charactor
+from constant import constant as const
 
-TILE_SIZE = 32
 
 class Enemy(charactor):
     """
     敵キャラクタークラス。
     プレイヤーと同様にマップ上を移動し、分岐点でランダムに方向転換する。
     """
-    def __init__(self, img="assets\\charactor\\Blinky.png", x=5*TILE_SIZE, y=5*TILE_SIZE):
+    def __init__(self, img="assets\\charactor\\Blinky.png", x=5*const.CHAR_SIZE, y=5*const.CHAR_SIZE):
         """
         敵キャラの初期化。
         :param img: キャラ画像パス
@@ -36,7 +36,7 @@ class Enemy(charactor):
         if player_pos is not None:
             px, py = player_pos
             ex, ey = self.x, self.y
-            dist = abs((px - ex) // TILE_SIZE) + abs((py - ey) // TILE_SIZE)
+            dist = abs((px - ex) // const.CHAR_SIZE) + abs((py - ey) // const.CHAR_SIZE)
             if dist <= 5:
                 # 進行可能な方向を調べて最短方向を選ぶ
                 directions = []
@@ -53,7 +53,7 @@ class Enemy(charactor):
                 min_dist = float('inf')
                 best_dirs = []
                 for d, nx, ny in directions:
-                    dval = abs((px - nx) // TILE_SIZE) + abs((py - ny) // TILE_SIZE)
+                    dval = abs((px - nx) // const.CHAR_SIZE) + abs((py - ny) // const.CHAR_SIZE)
                     if dval < min_dist:
                         min_dist = dval
                         best_dirs = [d]
@@ -129,18 +129,18 @@ class Enemy(charactor):
         self.draw_charactor(screen)
 
     def can_move_to(self, x, y, game_map):
-        CHAR_SIZE = TILE_SIZE
+        const.CHAR_SIZE = const.CHAR_SIZE
 
         corners = [
             (x, y),
-            (x + CHAR_SIZE - 1, y),
-            (x, y + CHAR_SIZE - 1),
-            (x + CHAR_SIZE - 1, y + CHAR_SIZE - 1)
+            (x + const.CHAR_SIZE - 1, y),
+            (x, y + const.CHAR_SIZE - 1),
+            (x + const.CHAR_SIZE - 1, y + const.CHAR_SIZE - 1)
         ]
 
         for cx, cy in corners:
-            grid_x = cx // TILE_SIZE
-            grid_y = cy // TILE_SIZE
+            grid_x = cx // const.CHAR_SIZE
+            grid_y = cy // const.CHAR_SIZE
             if not (0 <= grid_y < len(game_map) and 0 <= grid_x < len(game_map[0])):
                 return False
             if game_map[grid_y][grid_x] not in [0, 2]:

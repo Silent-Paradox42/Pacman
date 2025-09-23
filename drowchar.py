@@ -3,8 +3,7 @@
 画像の読み込み・描画・向き変更など共通処理を提供。
 """
 import pygame
-
-CHAR_SIZE = 32  # キャラクター画像のサイズ(px)
+from constant import constant as const
 
 class charactor:
     """
@@ -18,7 +17,7 @@ class charactor:
         :param x: 初期x座標
         :param y: 初期y座標
         """
-        self.image = pygame.transform.scale(pygame.image.load(pict), (CHAR_SIZE, CHAR_SIZE))
+        self.image = pygame.transform.scale(pygame.image.load(pict), (const.CHAR_SIZE, const.CHAR_SIZE))
         self.x = x
         self.y = y
         self.original_image = self.image.copy()  # 回転・反転前の元画像

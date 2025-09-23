@@ -5,24 +5,23 @@ import pygame
 import csv
 import copy
 
-TILE_SIZE = 32 # map1マスのサイズ
-
+from constant import constant as const
 
 # マップIDと対応するCSVファイルパスの辞書
 MAP_DATA={
-    1:'map/stage1.csv',
-    2:'map/stage2.csv',
-    3:'map/sample_stage3.csv',
-    90:'map/pacman_stage.csv',
-    91:'map/sample_stage.csv',
+    1:'assets/map/stage1.csv',
+    2:'assets/map/stage2.csv',
+    3:'assets/map/sample_stage3.csv',
+    90:'assets/map/pacman_stage.csv',
+    91:'assets/map/sample_stage.csv',
 }
 
 
 # タイル画像の読み込み（地面・壁・アイテム）
 tile_images = {
-    'load': pygame.transform.scale( pygame.image.load("assets/tiles/tuchi.png"),(TILE_SIZE,TILE_SIZE)),
-    'wall': pygame.transform.scale(pygame.image.load("assets/tiles/kabe_black.png"),(TILE_SIZE,TILE_SIZE)),
-    'dot': pygame.transform.scale(pygame.image.load("assets/tiles/item.png"),(TILE_SIZE/4,TILE_SIZE/4))
+    'load': pygame.transform.scale( pygame.image.load("assets/tiles/tuchi.png"),(const.TILE_SIZE,const.TILE_SIZE)),
+    'wall': pygame.transform.scale(pygame.image.load("assets/tiles/kabe_black.png"),(const.TILE_SIZE,const.TILE_SIZE)),
+    'dot': pygame.transform.scale(pygame.image.load("assets/tiles/item.png"),(const.TILE_SIZE/4,const.TILE_SIZE/4))
 }
 
 
@@ -47,11 +46,11 @@ def draw_map(screen, map_data):
     for y, row in enumerate(map_data):
         for x, tile in enumerate(row):
             if tile in [0,2]:
-                screen.blit(tile_images['load'], (x * TILE_SIZE, y * TILE_SIZE))
+                screen.blit(tile_images['load'], (x * const.TILE_SIZE, y * const.TILE_SIZE))
             if tile == 1:
-                screen.blit(tile_images['wall'], (x * TILE_SIZE, y * TILE_SIZE))
+                screen.blit(tile_images['wall'], (x * const.TILE_SIZE, y * const.TILE_SIZE))
             if tile == 2:
-                screen.blit(tile_images['dot'], (x * TILE_SIZE + TILE_SIZE/2 - TILE_SIZE/8, y * TILE_SIZE + TILE_SIZE/2 - TILE_SIZE/8))
+                screen.blit(tile_images['dot'], (x * const.TILE_SIZE + const.TILE_SIZE/2 - const.TILE_SIZE/8, y * const.TILE_SIZE + const.TILE_SIZE/2 - const.TILE_SIZE/8))
 
 
 def main():

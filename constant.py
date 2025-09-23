@@ -1,0 +1,23 @@
+
+class constant():
+    TILE_SIZE = 40
+    CHAR_SIZE = 40
+    GRID_SIZE = 21
+    SCREEN_WIDTH = TILE_SIZE  * GRID_SIZE
+    SCREEN_HEIGHT = TILE_SIZE * GRID_SIZE
+    FPS = 60
+    PLAYER_SPEED = 2
+    ENEMY_SPEED = 2
+    INITIAL_LIVES = 3
+    FONT_NAME = "yumincho"
+    FONT_SIZE = 24
+    TITLE_IMAGE_PATH = "assets\\title\\titleSample.png"
+    BACKGROUND_COLOR = (0, 0, 0)
+    PLAYER_START_POS = (1, 1)
+    ENEMY_START_POSITIONS = [(10, 1), (10, 10), (1, 10)]
+    PELLET_SCORE = 10
+    POWER_PELLET_SCORE = 50
+    GHOST_SCORE = 200
+    LEVEL_UP_SCORE = 1000
+    MAX_LEVEL = 5
+    DEBUG_MODE = False

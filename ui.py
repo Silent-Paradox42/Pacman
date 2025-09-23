@@ -1,6 +1,7 @@
 import pygame
 from player import Player
-from map.map import load_map, draw_map
+from assets.map.map import load_map, draw_map
+from constant import constant as const
 import sys
 
 pygame.init()

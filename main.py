@@ -3,17 +3,14 @@
 import pygame
 import sys
 import ui as Ui
+from constant import constant as const
 #from ui import GameUi, StartMenu
 from player import Player
 from enemy import Enemy
-from map.map import MAP_DATA, load_map, draw_map
+from assets.map.map import MAP_DATA, load_map, draw_map
 
 
-# 定数定義
-TILE_SIZE = 32  # 1マスのサイズ
-SCREEN_WIDTH = TILE_SIZE * 21  # 画面幅
-SCREEN_HEIGHT = TILE_SIZE * 21  # 画面高さ
-SCREEN_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
+screen_size = (const.SCREEN_WIDTH, const.SCREEN_HEIGHT)
 
 # ドットがすべて消えたか判定する関数
 def all_dots_cleared(map_data):
@@ -23,41 +20,40 @@ def all_dots_cleared(map_data):
 map_file = MAP_DATA.get(91, next(iter(MAP_DATA.values())))
 game_map, original_map = load_map(map_file)
 
-
 # Pygame 初期化
 pygame.init()
-screen = pygame.display.set_mode(SCREEN_SIZE)
+screen = pygame.display.set_mode(screen_size)
 pygame.display.set_caption("Pacman Player and Enemy Test")
 clock = pygame.time.Clock()
 
 # uiの初期化
 ui = Ui.GameUi()
-menu = Ui.StartMenu(SCREEN_SIZE)
-go = Ui.GameOverMenu(SCREEN_SIZE)
+menu = Ui.StartMenu(screen_size)
+go = Ui.GameOverMenu(screen_size)
 
 # スタートメニューの表示
 menu.draw(screen)
 
 # プレイヤー初期化
-#player = Player("assets\\charactor\\pacman.png", 1 * TILE_SIZE, 1 * TILE_SIZE, game_map)  # プレイヤー生成
-player = Player("assets\\charactor\\conkichi01.png", 0 * TILE_SIZE, 0 * TILE_SIZE, game_map) #初期座標テストコード
+#player = Player("assets\\charactor\\pacman.png", 1 * const.TILE_SIZE, 1 * const.TILE_SIZE, game_map)  # プレイヤー生成
+player = Player("assets\\charactor\\conkichi01.png", 0 * const.TILE_SIZE, 0 * const.TILE_SIZE, game_map) #初期座標テストコード
 
 # --- 敵キャラの自動配置 ---
 # 通路マス（2）の座標をリストアップ
 enemy_positions = []
 for y, row in enumerate(game_map):
     for x, cell in enumerate(row):
-        if cell == 2 or cell == 0:
+        if cell == 2 or cell == 0:      #
             enemy_positions.append((x, y))
 
 # できるだけ中央付近から4つ選ぶ
 center = (len(game_map[0]) // 2, len(game_map) // 2)
 enemy_positions.sort(key=lambda pos: (pos[0] - center[0]) ** 2 + (pos[1] - center[1]) ** 2)
 enemy_positions = enemy_positions[:4]
-enemy  = Enemy("assets\\charactor\\Blinky.png", enemy_positions[0][0] * TILE_SIZE, enemy_positions[0][1] * TILE_SIZE)
-enemy2 = Enemy("assets\\charactor\\Blinky.png", enemy_positions[1][0] * TILE_SIZE, enemy_positions[1][1] * TILE_SIZE)
-enemy3 = Enemy("assets\\charactor\\Blinky.png", enemy_positions[2][0] * TILE_SIZE, enemy_positions[2][1] * TILE_SIZE)
-enemy4 = Enemy("assets\\charactor\\Blinky.png", enemy_positions[3][0] * TILE_SIZE, enemy_positions[3][1] * TILE_SIZE)
+enemy  = Enemy("assets\\charactor\\Blinky.png", enemy_positions[0][0] * const.TILE_SIZE, enemy_positions[0][1] * const.TILE_SIZE)
+enemy2 = Enemy("assets\\charactor\\Blinky.png", enemy_positions[1][0] * const.TILE_SIZE, enemy_positions[1][1] * const.TILE_SIZE)
+enemy3 = Enemy("assets\\charactor\\Blinky.png", enemy_positions[2][0] * const.TILE_SIZE, enemy_positions[2][1] * const.TILE_SIZE)
+enemy4 = Enemy("assets\\charactor\\Blinky.png", enemy_positions[3][0] * const.TILE_SIZE, enemy_positions[3][1] * const.TILE_SIZE)
 flash_count = 0
 flash_timer = 0
 reset_pending = False
@@ -125,7 +121,6 @@ while running:
             player.reset_state()
             game_map = original_map
             player.reset_position()
-
 
     # 画面更新
     pygame.display.flip()
