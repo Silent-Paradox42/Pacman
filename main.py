@@ -48,6 +48,7 @@ for y, row in enumerate(game_map):
     for x, cell in enumerate(row):
         if cell == 2 or cell == 0:
             enemy_positions.append((x, y))
+
 # できるだけ中央付近から4つ選ぶ
 center = (len(game_map[0]) // 2, len(game_map) // 2)
 enemy_positions.sort(key=lambda pos: (pos[0] - center[0]) ** 2 + (pos[1] - center[1]) ** 2)
@@ -65,12 +66,11 @@ running = True
 while running:
     screen.fill((0, 0, 0))  # 背景を黒で塗りつぶし
 
-    # イベント処理（ウィンドウの×ボタンやキー入力）
+    # イベント処理
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.KEYDOWN:
-            # 方向キー入力でプレイヤーの進行方向を変更
             if event.key == pygame.K_LEFT:
                 player.set_direction("left")
             elif event.key == pygame.K_RIGHT:
@@ -80,18 +80,11 @@ while running:
             elif event.key == pygame.K_DOWN:
                 player.set_direction("down")
 
-    # --- ここから追加 ---
-    # ドットがすべて消えたらリセット準備
-    if all_dots_cleared(game_map) and not reset_pending:
-        flash_count = 0
-        flash_timer = pygame.time.get_ticks()
-        reset_pending = True
-
-    # 明転処理（3回）
-    if reset_pending:
+    # 👇 ここから明転処理と通常処理を分岐
+    if player.hit_flash:
         now = pygame.time.get_ticks()
-        if flash_count < 6:  # 白→黒→白→黒...を3回（6フレーム）
-            if (now - flash_timer) // 200 % 2 == 0:
+        if player.hit_flash_count < 6:
+            if (now - player.hit_flash_timer) // 200 % 2 == 0:
                 screen.fill((255, 255, 255))  # 白で塗りつぶし
             else:
                 draw_map(screen, game_map)
@@ -101,14 +94,11 @@ while running:
                 enemy3.draw(screen)
                 enemy4.draw(screen)
                 ui.draw(screen, player.get_score(), player.get_lifes())
-            if now - flash_timer > (flash_count + 1) * 200:
-                flash_count += 1
+            if now - player.hit_flash_timer > (player.hit_flash_count + 1) * 200:
+                player.hit_flash_count += 1
         else:
-            # マップとプレイヤーをリセット
-            import copy
-            game_map = copy.deepcopy(original_map)
             player.reset_position()
-            reset_pending = False
+            player.hit_flash = False
     else:
         # 通常描画・更新
         draw_map(screen, game_map)
@@ -129,7 +119,6 @@ while running:
 
     # 画面更新
     pygame.display.flip()
-    clock.tick(60)  # 60FPSでループ
-# ゲーム終了処理
+    clock.tick(60)# ゲーム終了処理
 pygame.quit()
 sys.exit()
