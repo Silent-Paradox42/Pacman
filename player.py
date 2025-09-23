@@ -39,6 +39,10 @@ class Player(character):
         self.start_x = self.x
         self.start_y = self.y
 
+        self.invincible = False
+        self.invincible_timer = 0
+        self.invincible_duration = 2000  # ミリ秒（2秒間無敵）
+
         if game_map and not self.can_move_to(self.x, self.y, game_map):
             import tkinter
             root = tkinter.Tk()
@@ -217,3 +221,24 @@ class Player(character):
         """
         if self.lifes > 0:
             self.lifes -= 1
+    
+    def check_collision_with_enemy(self, enemies):
+        """
+        敵との当たり判定をチェックし、当たったらライフを減らす。
+        :param enemies: 敵キャラのリスト
+        """
+        if self.invincible:
+            now = pygame.time.get_ticks()
+            if now - self.invincible_timer >= self.invincible_duration:
+                self.invincible = False
+            return
+
+        for enemy in enemies:
+            dx = abs(self.x - enemy.x)
+            dy = abs(self.y - enemy.y)
+            if dx < TILE_SIZE // 2 and dy < TILE_SIZE // 2:
+                self.lost_life()
+                self.reset_position()
+                self.invincible = True
+                self.invincible_timer = pygame.time.get_ticks()
+                break

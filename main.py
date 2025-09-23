@@ -55,6 +55,9 @@ enemy  = Enemy("assets\\charactor\\Blinky.png", enemy_positions[0][0] * TILE_SIZ
 enemy2 = Enemy("assets\\charactor\\Blinky.png", enemy_positions[1][0] * TILE_SIZE, enemy_positions[1][1] * TILE_SIZE)
 enemy3 = Enemy("assets\\charactor\\Blinky.png", enemy_positions[2][0] * TILE_SIZE, enemy_positions[2][1] * TILE_SIZE)
 enemy4 = Enemy("assets\\charactor\\Blinky.png", enemy_positions[3][0] * TILE_SIZE, enemy_positions[3][1] * TILE_SIZE)
+flash_count = 0
+flash_timer = 0
+reset_pending = False
 
 # メインループ
 running = True
@@ -76,38 +79,56 @@ while running:
             elif event.key == pygame.K_DOWN:
                 player.set_direction("down")
 
-    # マップ描画
-    draw_map(screen, game_map)
+    # --- ここから追加 ---
+    # ドットがすべて消えたらリセット準備
+    if all_dots_cleared(game_map) and not reset_pending:
+        flash_count = 0
+        flash_timer = pygame.time.get_ticks()
+        reset_pending = True
 
-    # プレイヤーと敵の状態更新
-    player.update(game_map)
-    player.check_dot_and_clear(game_map)
-
-    if all_dots_cleared(game_map):
-        import copy
-        game_map = copy.deepcopy(original_map)  # オリジナルのマップデータをコピーしてリセット
-        player.reset_position()
-        
-    player_pos = (player.x, player.y)
-    enemy.update(game_map, player_pos)
-    enemy2.update(game_map, player_pos)
-    enemy3.update(game_map, player_pos)
-    enemy4.update(game_map, player_pos)
-
-    # キャラクター描画
-    player.draw_charactor(screen)
-    enemy.draw(screen)
-    enemy2.draw(screen)
-    enemy3.draw(screen)
-    enemy4.draw(screen)
-
-    #Uiの描画
-    ui.draw(screen,player.get_score(),player.get_lifes())
+    # 明転処理（3回）
+    if reset_pending:
+        now = pygame.time.get_ticks()
+        if flash_count < 6:  # 白→黒→白→黒...を3回（6フレーム）
+            if (now - flash_timer) // 200 % 2 == 0:
+                screen.fill((255, 255, 255))  # 白で塗りつぶし
+            else:
+                draw_map(screen, game_map)
+                player.draw_charactor(screen)
+                enemy.draw(screen)
+                enemy2.draw(screen)
+                enemy3.draw(screen)
+                enemy4.draw(screen)
+                ui.draw(screen, player.get_score(), player.get_lifes())
+            if now - flash_timer > (flash_count + 1) * 200:
+                flash_count += 1
+        else:
+            # マップとプレイヤーをリセット
+            import copy
+            game_map = copy.deepcopy(original_map)
+            player.reset_position()
+            reset_pending = False
+    else:
+        # 通常描画・更新
+        draw_map(screen, game_map)
+        player.update(game_map)
+        player.check_dot_and_clear(game_map)
+        player.check_collision_with_enemy([enemy, enemy2, enemy3, enemy4])
+        player_pos = (player.x, player.y)
+        enemy.update(game_map, player_pos)
+        enemy2.update(game_map, player_pos)
+        enemy3.update(game_map, player_pos)
+        enemy4.update(game_map, player_pos)
+        player.draw_charactor(screen)
+        enemy.draw(screen)
+        enemy2.draw(screen)
+        enemy3.draw(screen)
+        enemy4.draw(screen)
+        ui.draw(screen, player.get_score(), player.get_lifes())
 
     # 画面更新
     pygame.display.flip()
     clock.tick(60)  # 60FPSでループ
-
 # ゲーム終了処理
 pygame.quit()
 sys.exit()
