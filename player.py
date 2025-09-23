@@ -33,17 +33,18 @@ class Player(character):
         self.score = 0       # スコア
         self.lifes = 3       # ライフ数
 
-        self.start_x = self.x # 初期位置を保存
-        self.start_y = self.y # 初期位置を保存
+        self.x = x * TILE_SIZE
+        self.y = y * TILE_SIZE
 
-        if game_map and not self.can_move_to(x, y, game_map):
-            # tkinterのメッセージボックスで警告を表示（画面サイズを変更しない）
+        self.start_x = self.x
+        self.start_y = self.y
+
+        if game_map and not self.can_move_to(self.x, self.y, game_map):
             import tkinter
-            from tkinter import messagebox
             root = tkinter.Tk()
             root.withdraw()
-            messagebox.showwarning("警告", "初期位置が壁です！通路に自動修正します。")
             root.destroy()
+
             # マップ内の最初の通路マス（0,2）を探して移動
             found = False
             for gy, row in enumerate(game_map):
@@ -51,6 +52,8 @@ class Player(character):
                     if cell in [0, 2]:
                         self.x = gx * TILE_SIZE
                         self.y = gy * TILE_SIZE
+                        self.start_x = self.x
+                        self.start_y = self.y
                         found = True
                         break
                 if found:
@@ -184,8 +187,8 @@ class Player(character):
         """
         プレイヤーを初期位置にリセット。
         """
-        self.x = self.start_x
-        self.y = self.start_y
+        self.x = self.start_x # 初期位置にリセット
+        self.y = self.start_y # 初期位置にリセット
         self.stuck = False
         self.wait_count = 0
 
