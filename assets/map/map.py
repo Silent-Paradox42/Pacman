@@ -52,7 +52,6 @@ def draw_map(screen, map_data):
             if tile == 2:
                 screen.blit(tile_images['dot'], (x * const.TILE_SIZE + const.TILE_SIZE/2 - const.TILE_SIZE/8, y * const.TILE_SIZE + const.TILE_SIZE/2 - const.TILE_SIZE/8))
 
-
 def main():
     """
     単体テスト用のメイン処理。マップのみを表示する。

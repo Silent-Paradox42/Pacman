@@ -3,6 +3,7 @@ from player import Player
 from assets.map.map import load_map, draw_map
 from constant import constant as const
 import sys
+import soundpro
 
 pygame.init()
 class GameUi():
@@ -20,12 +21,62 @@ class GameUi():
     def is_game_over(self,lives):
         return lives <= 0
 
+class PauseMenu():
+    def __init__(self, scrsize):
+        self.key = None
+        self.font = pygame.font.SysFont("yumincho", 72)
+        self.small_font = pygame.font.SysFont("yumincho", 36)
+        self.subscreen = pygame.surface.Surface((scrsize[0] ,scrsize[1]),pygame.SRCALPHA)
+        self.subscreen.fill((0, 0, 50,150))  # 半透明の緑背景
+
+        title_prompt = self.font.render("ぽ～～ず", True, (0, 200, 0))
+        self.subscreen.blit(title_prompt, (self.subscreen.get_width() // 2 - title_prompt.get_width() // 2, 100))
+        self.opencount = 0
+        
+        command = ["【Enter】リトライ","【Esc】ぽ～～ず解除","【Q】シャットダウン"]
+        for i ,com in enumerate(command):   #commandの行数分繰り返し
+            #描画設定
+            text_surface = self.small_font.render(com,True,(0,200,0))
+            #描画の縦位置指定
+            y  = self.subscreen.get_height() // 2 + i * text_surface.get_height()
+            #描画処理
+            self.subscreen.blit(
+                text_surface,
+                (self.subscreen.get_width() // 2 - text_surface.get_width() // 2,y)
+            )
+    def draw(self,screen):
+        self.opencount += 1
+        screen.blit(self.subscreen,(0,0))
+        self.wait_for_start()
+    
+    def wait_for_start(self):
+        waiting = True
+        while waiting:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_q) : 
+                    pygame.quit()
+                    exit()
+                elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                    waiting = False
+                    self.key = pygame.K_ESCAPE
+
+                elif event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+                    waiting = False
+                    self.key = pygame.K_RETURN
+
+
+            pygame.display.flip()
+            pygame.time.Clock().tick(20)  # 60FPSでループ
+
+
+
 class StartMenu():
     def __init__(self, scrsize):
         self.font = pygame.font.SysFont("yumincho", 48)
         self.small_font = pygame.font.SysFont("yumincho", 24)
         self.subscreen = pygame.surface.Surface((scrsize[0] ,scrsize[1]),pygame.SRCALPHA)
         
+        self.bgm = soundpro.bgm("assets\\bgm\\title_maou_bgm_ethnic13.mp3")
         self.image = pygame.image.load("assets\\title\\titleSample.png")
         self.prompt = self.small_font.render("Enterキーでスタート", True, (200, 200, 200))
         
@@ -40,15 +91,19 @@ class StartMenu():
 
     def wait_for_start(self):
         waiting = True
+        self.bgm.play(fade_ms=1000)
         while waiting:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
+                    self.bgm.stop(1000) 
                     pygame.quit()
                     exit()
                 elif event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+                    self.bgm.stop(1000) 
                     waiting = False
             pygame.display.flip()
             pygame.time.Clock().tick(20)  # 60FPSでループ
+
 
 class GameOverMenu():
     def __init__(self, scrsize):
@@ -57,10 +112,12 @@ class GameOverMenu():
         self.subscreen = pygame.surface.Surface((scrsize[0] ,scrsize[1]),pygame.SRCALPHA)
         self.subscreen.fill((0, 52, 0,150))  # 半透明の緑背景
         
-        title_prompt = self.font.render("げ～むお～ば～～", True, (0, 200, 0))
-        self.subscreen.blit(title_prompt, (self.subscreen.get_width() // 2 - title_prompt.get_width() // 2, 50))
+        self.bgm = soundpro.bgm('assets\\bgm\\GameOver_maou_bgm_8bit20.mp3')
         
-        command = ["【Enter】リトライ","【Esc】シャットダウン"]
+        title_prompt = self.font.render("げ～むお～ば～～", True, (0, 200, 0))
+        self.subscreen.blit(title_prompt, (self.subscreen.get_width() // 2 - title_prompt.get_width() // 2, 100))
+        
+        command = ["【Enter】リトライ","【Q】シャットダウン"]
         for i ,com in enumerate(command):   #commandの行数分繰り返し
             #描画設定
             text_surface = self.small_font.render(com,True,(0,200,0))
@@ -75,16 +132,20 @@ class GameOverMenu():
     def draw(self,screen):
         screen.blit(self.subscreen,(0,0))
         self.wait_for_start()
-
+    
     def wait_for_start(self):
         waiting = True
+        self.bgm.play(fade_ms=1000)
         while waiting:
             for event in pygame.event.get():
-                if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE) :
+                if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_q) : 
+                    self.bgm.stop(1000) 
                     pygame.quit()
                     exit()
                 elif event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+                    self.bgm.stop(1000) 
                     waiting = False
+
             pygame.display.flip()
             pygame.time.Clock().tick(20)  # 60FPSでループ
 

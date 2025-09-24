@@ -2,6 +2,7 @@
 # ゲームのメイン処理を行うモジュール
 import pygame
 import sys
+import soundpro
 import ui as Ui
 from constant import constant as const
 from player import Player
@@ -28,9 +29,11 @@ clock = pygame.time.Clock()
 ui = Ui.GameUi()
 menu = Ui.StartMenu(screen_size)
 go = Ui.GameOverMenu(screen_size)
+pause = Ui.PauseMenu(screen_size)
 
 # スタートメニューの表示
 menu.draw(screen)
+stage_bgm = soundpro.bgm("assets\\bgm\\base2_maou_bgm_healing15.mp3")
 
 # プレイヤー初期化
 #player = Player("assets\\charactor\\pacman.png", 1 * const.TILE_SIZE, 1 * const.TILE_SIZE, game_map)  # プレイヤー生成
@@ -60,9 +63,12 @@ next_timer_start = 0
 
 # メインループ
 running = True
+stage_bgm.play(-1,0,1000)   # BGM再生
 while running:
     screen.fill((0, 0, 0))  # 背景を黒で塗りつぶし
-
+    print(f"player.hit_flash: {player.hit_flash}")
+    print(f"all_dots_cleared(game_map):{all_dots_cleared(game_map)}")
+    print(f"not next_phase:{not next_phase}")
     # イベント処理
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -76,6 +82,13 @@ while running:
                 player.set_direction("up")
             elif event.key == pygame.K_DOWN:
                 player.set_direction("down")
+            elif event.key == pygame.K_ESCAPE:
+                pause.draw(screen)
+                if pause.key == pygame.K_RETURN:
+                    player.reset_state()
+                    player.reset_position()
+                    game_map = original_map
+                    stage_bgm.play(-1,0,1000)   # BGM再生
 
     # 👇 ここから明転処理と通常処理を分岐
     if player.hit_flash:
@@ -103,6 +116,7 @@ while running:
                 next_timer_start = pygame.time.get_ticks()
             else:
                 elapsed = pygame.time.get_ticks() - next_timer_start
+                print(f"elapsed:{elapsed}")
                 if elapsed < 5000:
                     # 5秒間「NEXT」表示（ゲーム停止）
                     draw_map(screen, game_map)
@@ -145,11 +159,13 @@ while running:
         if player.get_lifes() <= 0:
             go.draw(screen)
             player.reset_state()
-            game_map = original_map
             player.reset_position()
+            game_map = original_map
+            stage_bgm.play(-1,0,1000)   # BGM再生
 
     # 画面更新
     pygame.display.flip()
     clock.tick(60)# ゲーム終了処理
+
 pygame.quit()
 sys.exit()
