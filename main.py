@@ -17,7 +17,7 @@ def all_dots_cleared(map_data):
     return all(2 not in row for row in map_data)
 
 # マップ読み込み（MAP_DATA[90] が存在しない場合は最初のマップを使用）
-map_file = MAP_DATA.get(91, next(iter(MAP_DATA.values())))
+map_file = MAP_DATA.get(90, next(iter(MAP_DATA.values())))
 game_map, original_map = load_map(map_file)
 
 # Pygame 初期化
