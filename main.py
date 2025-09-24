@@ -4,11 +4,9 @@ import pygame
 import sys
 import ui as Ui
 from constant import constant as const
-#from ui import GameUi, StartMenu
 from player import Player
 from enemy import Enemy
 from assets.map.map import MAP_DATA, load_map, draw_map
-
 
 screen_size = (const.SCREEN_WIDTH, const.SCREEN_HEIGHT)
 
@@ -17,7 +15,7 @@ def all_dots_cleared(map_data):
     return all(2 not in row for row in map_data)
 
 # マップ読み込み（MAP_DATA[90] が存在しない場合は最初のマップを使用）
-map_file = MAP_DATA.get(90, next(iter(MAP_DATA.values())))
+map_file = MAP_DATA.get(91, next(iter(MAP_DATA.values())))
 game_map, original_map = load_map(map_file)
 
 # Pygame 初期化
@@ -43,7 +41,7 @@ player = Player("assets\\charactor\\conkichi01.png", 0 * const.TILE_SIZE, 0 * co
 enemy_positions = []
 for y, row in enumerate(game_map):
     for x, cell in enumerate(row):
-        if cell == 2 or cell == 0:      #
+        if cell == 2 or cell == 0: # 通路マスまたはドットマス      
             enemy_positions.append((x, y))
 
 # できるだけ中央付近から4つ選ぶ
@@ -57,6 +55,8 @@ enemy4 = Enemy("assets\\charactor\\Blinky.png", enemy_positions[3][0] * const.TI
 flash_count = 0
 flash_timer = 0
 reset_pending = False
+next_phase = False
+next_timer_start = 0
 
 # メインループ
 running = True
@@ -97,23 +97,49 @@ while running:
             player.reset_position()
             player.hit_flash = False
     else:
-        # 通常描画・更新
-        draw_map(screen, game_map)
-        player.update(game_map)
-        player.check_dot_and_clear(game_map)
-        player.check_collision_with_enemy([enemy, enemy2, enemy3, enemy4])
-        player_pos = (player.x, player.y)
-        enemy.update(game_map, player_pos)
-        enemy2.update(game_map, player_pos)
-        enemy3.update(game_map, player_pos)
-        enemy4.update(game_map, player_pos)
-        player.draw_charactor(screen)
-        enemy.draw(screen)
-        enemy2.draw(screen)
-        enemy3.draw(screen)
-        enemy4.draw(screen)
+        if all_dots_cleared(game_map):
+            if not next_phase:
+                next_phase = True
+                next_timer_start = pygame.time.get_ticks()
+            else:
+                elapsed = pygame.time.get_ticks() - next_timer_start
+                if elapsed < 5000:
+                    # 5秒間「NEXT」表示（ゲーム停止）
+                    draw_map(screen, game_map)
+                    player.draw_charactor(screen)
+                    enemy.draw(screen)
+                    enemy2.draw(screen)
+                    enemy3.draw(screen)
+                    enemy4.draw(screen)
+                    ui.draw(screen, player.get_score(), player.get_lifes())
 
-        ui.draw(screen, player.get_score(), player.get_lifes())
+                    # 「NEXT」テキストを中央に表示
+                    font = pygame.font.SysFont(None, 100)
+                    text = font.render("NEXT", True, (255, 255, 255))
+                    text_rect = text.get_rect(center=(const.SCREEN_WIDTH // 2, const.SCREEN_HEIGHT // 2))
+                    screen.blit(text, text_rect)
+                else:
+                    # 5秒経過後にマップとプレイヤーをリセット（スコアは維持）
+                    game_map = [row[:] for row in original_map]
+                    player.reset_position()
+                    next_phase = False
+        else:
+            # 通常描画・更新
+            draw_map(screen, game_map)
+            player.update(game_map)
+            player.check_dot_and_clear(game_map)
+            player.check_collision_with_enemy([enemy, enemy2, enemy3, enemy4])
+            player_pos = (player.x, player.y)
+            enemy.update(game_map, player_pos)
+            enemy2.update(game_map, player_pos)
+            enemy3.update(game_map, player_pos)
+            enemy4.update(game_map, player_pos)
+            player.draw_charactor(screen)
+            enemy.draw(screen)
+            enemy2.draw(screen)
+            enemy3.draw(screen)
+            enemy4.draw(screen)
+            ui.draw(screen, player.get_score(), player.get_lifes())
 
         #game over判定
         if player.get_lifes() <= 0:
