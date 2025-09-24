@@ -160,7 +160,7 @@ while running:
             go.draw(screen)
             player.reset_state()
             player.reset_position()
-            game_map = original_map
+            game_map = [row[:] for row in original_map]
             stage_bgm.play(-1,0,1000)   # BGM再生
 
     # 画面更新
