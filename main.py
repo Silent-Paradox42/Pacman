@@ -108,6 +108,10 @@ while running:
                 player.hit_flash_count += 1
         else:
             player.reset_position()
+            enemy.reset_position(game_map)
+            enemy2.reset_position(game_map)
+            enemy3.reset_position(game_map)
+            enemy4.reset_position(game_map)
             player.hit_flash = False
     else:
         if all_dots_cleared(game_map):
@@ -136,7 +140,11 @@ while running:
                     # 5秒経過後にマップとプレイヤーをリセット（スコアは維持）
                     game_map = [row[:] for row in original_map]
                     player.reset_position()
-                    next_phase = False
+                    enemy.reset_position(game_map)
+                    enemy2.reset_position(game_map)
+                    enemy3.reset_position(game_map)
+                    enemy4.reset_position(game_map)
+                    next_phase = False      
         else:
             # 通常描画・更新
             draw_map(screen, game_map)

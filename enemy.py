@@ -147,3 +147,16 @@ class Enemy(charactor):
                 return False
 
         return True
+    
+    def reset_position(self, game_map):
+        """
+        敵の位置をマップ上の通路（tile=2 または 0）からランダムに選んで再配置する。
+        """
+        valid_positions = []
+        for y, row in enumerate(game_map):
+            for x, tile in enumerate(row):
+                if tile in [0, 2]:  # 通路またはドット
+                    valid_positions.append((x * const.CHAR_SIZE, y * const.CHAR_SIZE))
+        if valid_positions:
+            self.x, self.y = random.choice(valid_positions)
+
