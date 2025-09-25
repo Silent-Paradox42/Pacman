@@ -6,17 +6,12 @@ from constant import constant as const
 from soundpro import bgm  ,se as se
 from player import Player
 from enemy import Enemy
-from assets.map.map import MAP_DATA, load_map, draw_map
-
+from assets.map.map import create_map
 screen_size = (const.SCREEN_WIDTH, const.SCREEN_HEIGHT)
 
 # ドットがすべて消えたか判定する関数
 def all_dots_cleared(map_data):
     return all(2 not in row for row in map_data)
-
-# マップ読み込み（MAP_DATA[90] が存在しない場合は最初のマップを使用）
-map_file = MAP_DATA.get(90, next(iter(MAP_DATA.values())))
-game_map, original_map = load_map(map_file)
 
 # Pygame 初期化
 pygame.init()
@@ -33,6 +28,17 @@ pause = Ui.PauseMenu(screen_size)
 # スタートメニューの表示
 menu.draw(screen)
 stage_bgm = bgm("assets\\bgm\\base2_maou_bgm_healing15.mp3")
+
+#マップの初期化，設定
+map = create_map()
+if not menu.flg_stage_command :
+    # マップ読み込み（MAP_DATA[90] が存在しない場合は最初のマップを使用）
+    map_file = const.MAP_DATA.get(90, next(iter(const.MAP_DATA.values())))
+    game_map, original_map = map.load_map(map_file)
+else:
+    #自動生成(Copilot君作)
+    game_map = map.generate_map(21)
+    original_map = [row[:] for row in game_map]
 
 # プレイヤー初期化
 #player = Player("assets\\charactor\\pacman.png", 1 * const.TILE_SIZE, 1 * const.TILE_SIZE, game_map)  # プレイヤー生成
@@ -96,7 +102,7 @@ while running:
             if (now - player.hit_flash_timer) // 200 % 2 == 0:
                 screen.fill((255, 255, 255))  # 白で塗りつぶし
             else:
-                draw_map(screen, game_map)
+                map.draw_map(screen, game_map)
                 player.draw_charactor(screen)
                 enemy.draw(screen)
                 enemy2.draw(screen)
@@ -122,7 +128,7 @@ while running:
                 print(f"elapsed:{elapsed}")
                 if elapsed < 5000:
                     # 5秒間「NEXT」表示（ゲーム停止）
-                    draw_map(screen, game_map)
+                    map.draw_map(screen, game_map)
                     player.draw_charactor(screen)
                     enemy.draw(screen)
                     enemy2.draw(screen)
@@ -146,7 +152,7 @@ while running:
                     next_phase = False      
         else:
             # 通常描画・更新
-            draw_map(screen, game_map)
+            map.draw_map(screen, game_map)
             player.update(game_map)
             player.check_dot_and_clear(game_map)
             player.check_collision_with_enemy([enemy, enemy2, enemy3, enemy4])

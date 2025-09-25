@@ -1,5 +1,5 @@
 import tkinter as tk  # GUIアプリケーション作成のための標準的なPythonインターフェース
-
+import pygame
 class constant():
     TILE_SIZE = 40
     CHAR_SIZE = 40
@@ -10,8 +10,10 @@ class constant():
     PLAYER_SPEED = 2
     ENEMY_SPEED = 2
     INITIAL_LIVES = 3
-    FONT_NAME = "yumincho"
-    FONT_SIZE = 24
+    MAIN_FONT_NAME = "yumincho"
+    MAIN_FONT_SIZE = 48
+    SUB_FONT_NAME = "yumincho"
+    SUB_FONT_SIZE = 36
     TITLE_IMAGE_PATH = "assets\\title\\titleSample.png"
     BACKGROUND_COLOR = (0, 0, 0)
     PLAYER_START_POS = (1, 1)
@@ -22,6 +24,21 @@ class constant():
     LEVEL_UP_SCORE = 1000
     MAX_LEVEL = 5
     DEBUG_MODE = False
+    INPUT_TIME = 10000          #入力時間(ms)
+    KONAMI_CODE = [
+        pygame.K_UP, pygame.K_UP,
+        pygame.K_DOWN, pygame.K_DOWN,
+        pygame.K_LEFT, pygame.K_RIGHT,
+        pygame.K_LEFT, pygame.K_RIGHT,
+        pygame.K_b, pygame.K_a
+    ]
+    MAP_DATA={
+    1:'assets/map/stage1.csv',
+    2:'assets/map/stage2.csv',
+    3:'assets/map/sample_stage3.csv',
+    90:'assets/map/pacman_stage.csv',
+    91:'assets/map/sample_stage.csv',
+    }
 
     def __init__(self):
         self.aa = self.TILE_SIZE
