@@ -94,9 +94,9 @@ class StartMenu():
 
     def draw(self,screen):
         screen.blit(self.subscreen,(0,0))
-        self.wait_for_start()
+        self.wait_for_start(screen)
 
-    def wait_for_start(self):
+    def wait_for_start(self,screen):
         waiting = True
         self.bgm.play(fade_ms=1000)
         key_history = []
@@ -119,14 +119,16 @@ class StartMenu():
                         key_history.clear()
                         basetime = pygame.time.get_ticks()
 
-            print(f"key_history:{key_history}")
+            #print(f"key_history:{key_history}")
             if const.KONAMI_CODE == key_history:
                 self.command.append("OPEN RANDOM STAGE")
-                self.draw(self.subscreen)
-                #self.subscreen.fill((0, 0, 50))  # 背景色で塗りつぶす
-                #self.subscreen.blit(self.image, (self.subscreen.get_width() // 2 - self.image.get_width() // 2, 50))
-                #add_grahical_prompt(self.subscreen, self.command, self.small_font, color=(0,200,0))
-    
+
+                self.subscreen.fill((0, 0, 50))  # 背景色で塗りつぶす
+                self.subscreen.blit(self.image, (self.subscreen.get_width() // 2 - self.image.get_width() // 2, 50))
+                add_grahical_prompt(self.subscreen, self.command, self.small_font, color=(0,200,0))
+
+                screen.blit(self.subscreen,(0,0))
+
                 self.flg_stage_command = True
                 key_history.clear()
                 basetime = pygame.time.get_ticks()
@@ -173,7 +175,7 @@ class GameOverMenu():
 
 
             pygame.display.flip()
-            pygame.time.Clock.tick(20)  # 60FPSでループ
+            pygame.time.Clock().tick(20)  # 60FPSでループ
 
 #デバッグメイン
 def main():
