@@ -71,9 +71,7 @@ running = True
 stage_bgm.play(-1,0,1000)   # BGM再生
 while running:
     screen.fill((0, 0, 0))  # 背景を黒で塗りつぶし
-    print(f"player.hit_flash: {player.hit_flash}")
-    print(f"all_dots_cleared(game_map):{all_dots_cleared(game_map)}")
-    print(f"not next_phase:{not next_phase}")
+
     # イベント処理
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -125,7 +123,6 @@ while running:
                 next_timer_start = pygame.time.get_ticks()
             else:
                 elapsed = pygame.time.get_ticks() - next_timer_start
-                print(f"elapsed:{elapsed}")
                 if elapsed < 5000:
                     # 5秒間「NEXT」表示（ゲーム停止）
                     map.draw_map(screen, game_map)
