@@ -2,9 +2,9 @@
 # ゲームのメイン処理を行うモジュール
 import pygame
 import sys
-import soundpro
 import ui as Ui
 from constant import constant as const
+from soundpro import bgm  ,se as se
 from player import Player
 from enemy import Enemy
 from assets.map.map import MAP_DATA, load_map, draw_map
@@ -33,7 +33,7 @@ pause = Ui.PauseMenu(screen_size)
 
 # スタートメニューの表示
 menu.draw(screen)
-stage_bgm = soundpro.bgm("assets\\bgm\\base2_maou_bgm_healing15.mp3")
+stage_bgm = bgm("assets\\bgm\\base2_maou_bgm_healing15.mp3")
 
 # プレイヤー初期化
 #player = Player("assets\\charactor\\pacman.png", 1 * const.TILE_SIZE, 1 * const.TILE_SIZE, game_map)  # プレイヤー生成
@@ -87,7 +87,7 @@ while running:
                 if pause.key == pygame.K_RETURN:
                     player.reset_state()
                     player.reset_position()
-                    game_map = original_map
+                    game_map = [row[:] for row in original_map]
                     stage_bgm.play(-1,0,1000)   # BGM再生
 
     # 👇 ここから明転処理と通常処理を分岐
@@ -160,7 +160,7 @@ while running:
             go.draw(screen)
             player.reset_state()
             player.reset_position()
-            game_map = original_map
+            game_map = [row[:] for row in original_map]
             stage_bgm.play(-1,0,1000)   # BGM再生
 
     # 画面更新
