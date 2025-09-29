@@ -7,7 +7,6 @@ import soundpro
 
 pygame.init()
 
-#
 def add_grahical_prompt(screen,command,font,color=(0,200,0)):
     for i ,com in enumerate(command):   #commandの行数分繰り返し
     #描画設定

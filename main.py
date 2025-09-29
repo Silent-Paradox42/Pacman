@@ -13,6 +13,24 @@ screen_size = (const.SCREEN_WIDTH, const.SCREEN_HEIGHT)
 def all_dots_cleared(map_data):
     return all(2 not in row for row in map_data)
 
+# 敵キャラを初期化する関数
+def initialize_enemies(game_map):
+    enemy_positions = []
+    for y, row in enumerate(game_map):
+        for x, cell in enumerate(row):
+            if cell == 2 or cell == 0:
+                enemy_positions.append((x, y))
+
+    center = (len(game_map[0]) // 2, len(game_map) // 2)
+    enemy_positions.sort(key=lambda pos: (pos[0] - center[0]) ** 2 + (pos[1] - center[1]) ** 2)
+    selected_positions = enemy_positions[:4]
+
+    return [
+        Enemy("assets\\charactor\\Blinky.png", x * const.TILE_SIZE, y * const.TILE_SIZE)
+        for x, y in selected_positions
+    ]
+
+###メイン処理###
 # Pygame 初期化
 pygame.init()
 screen = pygame.display.set_mode(screen_size)
@@ -40,26 +58,8 @@ else:
     game_map = map.generate_map(21)
     original_map = [row[:] for row in game_map]
 
-# プレイヤー初期化
-#player = Player("assets\\charactor\\pacman.png", 1 * const.TILE_SIZE, 1 * const.TILE_SIZE, game_map)  # プレイヤー生成
-player = Player("assets\\charactor\\conkichi01.png", 0 * const.TILE_SIZE, 0 * const.TILE_SIZE, game_map) #初期座標テストコード
-
-# --- 敵キャラの自動配置 ---
-# 通路マス（2）の座標をリストアップ
-enemy_positions = []
-for y, row in enumerate(game_map):
-    for x, cell in enumerate(row):
-        if cell == 2 or cell == 0: # 通路マスまたはドットマス      
-            enemy_positions.append((x, y))
-
-# できるだけ中央付近から4つ選ぶ
-center = (len(game_map[0]) // 2, len(game_map) // 2)
-enemy_positions.sort(key=lambda pos: (pos[0] - center[0]) ** 2 + (pos[1] - center[1]) ** 2)
-enemy_positions = enemy_positions[:4]
-enemy  = Enemy("assets\\charactor\\Blinky.png", enemy_positions[0][0] * const.TILE_SIZE, enemy_positions[0][1] * const.TILE_SIZE)
-enemy2 = Enemy("assets\\charactor\\Blinky.png", enemy_positions[1][0] * const.TILE_SIZE, enemy_positions[1][1] * const.TILE_SIZE)
-enemy3 = Enemy("assets\\charactor\\Blinky.png", enemy_positions[2][0] * const.TILE_SIZE, enemy_positions[2][1] * const.TILE_SIZE)
-enemy4 = Enemy("assets\\charactor\\Blinky.png", enemy_positions[3][0] * const.TILE_SIZE, enemy_positions[3][1] * const.TILE_SIZE)
+player = Player("assets\\charactor\\conkichi01.png", 0 * const.TILE_SIZE, 0 * const.TILE_SIZE, game_map) #マップデータを渡す
+enemies = initialize_enemies(game_map)
 flash_count = 0
 flash_timer = 0
 reset_pending = False
@@ -102,19 +102,15 @@ while running:
             else:
                 map.draw_map(screen, game_map)
                 player.draw_charactor(screen)
-                enemy.draw(screen)
-                enemy2.draw(screen)
-                enemy3.draw(screen)
-                enemy4.draw(screen)
+                for enemy in enemies:
+                    enemy.draw(screen)                    
                 ui.draw(screen, player.get_score(), player.get_lifes())
             if now - player.hit_flash_timer > (player.hit_flash_count + 1) * 200:
                 player.hit_flash_count += 1
         else:
             player.reset_position()
-            enemy.reset_position(game_map)
-            enemy2.reset_position(game_map)
-            enemy3.reset_position(game_map)
-            enemy4.reset_position(game_map)
+            for enemy in enemies:
+                enemy.reset_position(game_map)                
             player.hit_flash = False
     else:
         if all_dots_cleared(game_map):
@@ -127,10 +123,8 @@ while running:
                     # 5秒間「NEXT」表示（ゲーム停止）
                     map.draw_map(screen, game_map)
                     player.draw_charactor(screen)
-                    enemy.draw(screen)
-                    enemy2.draw(screen)
-                    enemy3.draw(screen)
-                    enemy4.draw(screen)
+                    for enemy in enemies:
+                        enemy.draw(screen)                        
                     ui.draw(screen, player.get_score(), player.get_lifes())
 
                     # 「NEXT」テキストを中央に表示
@@ -142,27 +136,21 @@ while running:
                     # 5秒経過後にマップとプレイヤーをリセット（スコアは維持）
                     game_map = [row[:] for row in original_map]
                     player.reset_position()
-                    enemy.reset_position(game_map)
-                    enemy2.reset_position(game_map)
-                    enemy3.reset_position(game_map)
-                    enemy4.reset_position(game_map)
+                    for enemy in enemies:
+                        enemy.reset_position(game_map)                        
                     next_phase = False      
         else:
             # 通常描画・更新
             map.draw_map(screen, game_map)
             player.update(game_map)
             player.check_dot_and_clear(game_map)
-            player.check_collision_with_enemy([enemy, enemy2, enemy3, enemy4])
+            player.check_collision_with_enemy(enemies)            
             player_pos = (player.x, player.y)
-            enemy.update(game_map, player_pos)
-            enemy2.update(game_map, player_pos)
-            enemy3.update(game_map, player_pos)
-            enemy4.update(game_map, player_pos)
+            for enemy in enemies:
+                enemy.update(game_map, player_pos)                
             player.draw_charactor(screen)
-            enemy.draw(screen)
-            enemy2.draw(screen)
-            enemy3.draw(screen)
-            enemy4.draw(screen)
+            for enemy in enemies:
+                enemy.draw(screen)                
             ui.draw(screen, player.get_score(), player.get_lifes())
 
         #game over判定
@@ -171,7 +159,8 @@ while running:
             player.reset_state()
             player.reset_position()
             game_map = [row[:] for row in original_map]
-            stage_bgm.play(-1,0,1000)   # BGM再生
+            enemies = initialize_enemies(game_map)
+            stage_bgm.play(-1,0,1000)
 
     # 画面更新
     pygame.display.flip()
