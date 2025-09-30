@@ -31,13 +31,12 @@ class Enemy(charactor):
         毎フレーム呼ばれる。敵キャラの移動・方向転換ロジック。
         分岐点ではランダムに方向転換し、壁にぶつかった場合はUターンも許可。
         """
-
         # プレイヤーが近い場合は追いかける
         if player_pos is not None:
             px, py = player_pos
             ex, ey = self.x, self.y
             dist = abs((px - ex) // const.CHAR_SIZE) + abs((py - ey) // const.CHAR_SIZE)
-            if dist <= 5:
+            if dist <= 3:
                 # 進行可能な方向を調べて最短方向を選ぶ
                 directions = []
                 for d, (dx, dy) in {
