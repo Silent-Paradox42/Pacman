@@ -1,15 +1,11 @@
-
 # マップデータの管理・描画・読み込みを行うモジュール
-
 import pygame
 import csv
 import copy
 import random
-
 from constant import constant as const
 
 # マップIDと対応するCSVファイルパスの辞書
-
 class create_map():
     # タイル画像の読み込み（地面・壁・アイテム）
     def __init__(self):
@@ -58,7 +54,7 @@ class create_map():
     def generate_map(self,size):
         maze = [[1 for _ in range(size)] for _ in range(size)]
 
-        # Initialize all inner cells as walls
+        # Initialize maze with walls
         for y in range(1, size - 1):
             for x in range(1, size - 1):
                 maze[y][x] = 1

@@ -47,14 +47,16 @@ pause = Ui.PauseMenu(screen_size)
 menu.draw(screen)
 stage_bgm = bgm("assets\\bgm\\base2_maou_bgm_healing15.mp3")
 
-#マップの初期化，設定
+# マップの初期化，設定
 map = create_map()
-if not menu.flg_stage_command :
-    # マップ読み込み（MAP_DATA[90] が存在しない場合は最初のマップを使用）
+
+# マップデータの読み込みまたは生成
+if not menu.flg_stage_command:
+    # 通常マップを読み込む
     map_file = const.MAP_DATA.get(90, next(iter(const.MAP_DATA.values())))
     game_map, original_map = map.load_map(map_file)
 else:
-    #自動生成(Copilot君作)
+    # ランダムマップを生成
     game_map = map.generate_map(21)
     original_map = [row[:] for row in game_map]
 

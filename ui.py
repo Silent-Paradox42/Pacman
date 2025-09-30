@@ -26,7 +26,6 @@ class GameUi():
 
     #スコアとライフの描画処理
     def draw(self, screen, score=0, lives=3):
-        #font = pygame.font.SysFont("Wide Latin", 20)
         font = pygame.font.SysFont("Snap ITC", 18)
         text = font.render(f"Score: {score}    Life : {lives}", True, (255, 255, 255))
         screen.blit(text,(10,10))
@@ -72,8 +71,6 @@ class PauseMenu():
             pygame.display.flip()
             pygame.time.Clock().tick(20)  # 60FPSでループ
 
-
-
 class StartMenu():
     def __init__(self, scrsize):
         self.font = pygame.font.SysFont("yumincho", 48)
@@ -86,7 +83,13 @@ class StartMenu():
         self.subscreen.fill((0, 0, 50))  # ダークブルー背景
         self.subscreen.blit(self.image, (self.subscreen.get_width() // 2 - self.image.get_width() // 2, 50))
         
-        self.command = ["Enterキーでスタート","","※プレイ中【Esc】でpause可能"]
+        self.command = [
+            "【1】通常マップでスタート",
+            "【2】ランダムマップでスタート",
+            "",
+            "※プレイ中【Esc】でpause可能"
+        ]
+
         add_grahical_prompt(self.subscreen,self.command,self.small_font,color=(200,200,200))
 
         self.flg_stage_command = False
@@ -95,46 +98,32 @@ class StartMenu():
         screen.blit(self.subscreen,(0,0))
         self.wait_for_start(screen)
 
-    def wait_for_start(self,screen):
+    def wait_for_start(self, screen):
         waiting = True
         self.bgm.play(fade_ms=1000)
-        key_history = []
-        basetime = pygame.time.get_ticks()
+
         while waiting:
-            #ウィンドウ×ボタンを押下したときの処理
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    self.bgm.stop(1000) 
+                    self.bgm.stop(1000)
                     pygame.quit()
                     exit()
-                #Enterキーを押下したときの処理
-                elif event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
-                    self.bgm.stop(1000) 
-                    waiting = False
-                if event.type == pygame.KEYDOWN:
-                    if (pygame.time.get_ticks() - basetime) <= const.INPUT_TIME:
-                        key_history.append(event.key)
-                    elif (pygame.time.get_ticks() - basetime) > const.INPUT_TIME or (len(key_history) > 10):
-                        key_history.clear()
-                        basetime = pygame.time.get_ticks()
 
-            #print(f"key_history:{key_history}")
-            if const.KONAMI_CODE == key_history:
-                self.command.append("OPEN RANDOM STAGE")
+                elif event.type == pygame.KEYDOWN:
+                    # 通常マップでスタート
+                    if event.key == pygame.K_1:
+                        self.flg_stage_command = False
+                        self.bgm.stop(1000)
+                        waiting = False
 
-                self.subscreen.fill((0, 0, 50))  # 背景色で塗りつぶす
-                self.subscreen.blit(self.image, (self.subscreen.get_width() // 2 - self.image.get_width() // 2, 50))
-                add_grahical_prompt(self.subscreen, self.command, self.small_font, color=(0,200,0))
-
-                screen.blit(self.subscreen,(0,0))
-
-                self.flg_stage_command = True
-                key_history.clear()
-                basetime = pygame.time.get_ticks()
+                    # ランダムマップでスタート
+                    elif event.key == pygame.K_2:
+                        self.flg_stage_command = True
+                        self.bgm.stop(1000)
+                        waiting = False
 
             pygame.display.flip()
             pygame.time.Clock().tick(20)  # 60FPSでループ
-
 
 class GameOverMenu():
     def __init__(self, scrsize):
@@ -171,8 +160,6 @@ class GameOverMenu():
                     self.bgm.stop(1000) 
                     waiting = False
 
-
-
             pygame.display.flip()
             pygame.time.Clock().tick(20)  # 60FPSでループ
 
@@ -196,12 +183,10 @@ def main():
             if event.type == pygame.KEYDOWN:
                 go.draw()
 
-
         player.update([])
         player.draw(screen)
         player.draw_charactor(screen)
         game_point.draw(screen)
-
         pygame.display.flip()
         clock.tick(60)
 
