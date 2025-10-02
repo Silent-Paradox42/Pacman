@@ -181,15 +181,16 @@ class Player(character):
         return True
 
     def check_dot_and_clear(self, game_map):
-        """
-        プレイヤーがドットの上にいる場合、ドットを消す。
-        """
+        """プレイヤーがドットを取ったか判定し、取ったら消す。スコア加算。
+        :param game_map: マップデータ"""
         tile_x = self.x // const.TILE_SIZE
         tile_y = self.y // const.TILE_SIZE
         if 0 <= tile_y < len(game_map) and 0 <= tile_x < len(game_map[0]):
             if game_map[tile_y][tile_x] == 2:
                 game_map[tile_y][tile_x] = 0
                 self.score += 10  # スコア加算
+                return True
+        return False
 
     def reset_position(self):
         """

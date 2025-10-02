@@ -33,6 +33,7 @@ def initialize_enemies(game_map):
 ###メイン処理###
 # Pygame 初期化
 pygame.init()
+next_font = pygame.font.Font(None, 100)
 screen = pygame.display.set_mode(screen_size)
 pygame.display.set_caption("Pacman Player and Enemy Test")
 clock = pygame.time.Clock()
@@ -60,11 +61,13 @@ else:
     game_map = map.generate_map(21)
     original_map = [row[:] for row in game_map]
 
+# マップ描画用Surfaceの作成
+map_surface = pygame.Surface(screen_size)
+map.draw_map(map_surface, game_map)
+
+# プレイヤーと敵キャラの初期化
 player = Player("assets\\charactor\\conkichi01.png", 0 * const.TILE_SIZE, 0 * const.TILE_SIZE, game_map) #マップデータを渡す
 enemies = initialize_enemies(game_map)
-flash_count = 0
-flash_timer = 0
-reset_pending = False
 next_phase = False
 next_timer_start = 0
 
@@ -93,16 +96,18 @@ while running:
                     player.reset_state()
                     player.reset_position()
                     game_map = [row[:] for row in original_map]
+                    map.draw_map(map_surface, game_map)
                     stage_bgm.play(-1,0,1000)   # BGM再生
 
-    # 👇 ここから明転処理と通常処理を分岐
+    # playerが敵にあたった時の処理と無敵時間調整
     if player.hit_flash:
         now = pygame.time.get_ticks()
         if player.hit_flash_count < 6:
             if (now - player.hit_flash_timer) // 200 % 2 == 0:
                 screen.fill((255, 255, 255))  # 白で塗りつぶし
+            # 通常描画・更新
             else:
-                map.draw_map(screen, game_map)
+                screen.blit(map_surface, (0, 0))
                 player.draw_charactor(screen)
                 for enemy in enemies:
                     enemy.draw(screen)                    
@@ -115,6 +120,7 @@ while running:
                 enemy.reset_position(game_map)                
             player.hit_flash = False
     else:
+        # ドットがすべて消えたか判定
         if all_dots_cleared(game_map):
             if not next_phase:
                 next_phase = True
@@ -123,37 +129,40 @@ while running:
                 elapsed = pygame.time.get_ticks() - next_timer_start
                 if elapsed < 5000:
                     # 5秒間「NEXT」表示（ゲーム停止）
-                    map.draw_map(screen, game_map)
+                    screen.blit(map_surface, (0, 0))
                     player.draw_charactor(screen)
                     for enemy in enemies:
                         enemy.draw(screen)                        
                     ui.draw(screen, player.get_score(), player.get_lifes())
 
                     # 「NEXT」テキストを中央に表示
-                    font = pygame.font.SysFont(None, 100)
-                    text = font.render("NEXT", True, (255, 255, 255))
+                    text = next_font.render("NEXT", True, (255, 255, 255))
                     text_rect = text.get_rect(center=(const.SCREEN_WIDTH // 2, const.SCREEN_HEIGHT // 2))
                     screen.blit(text, text_rect)
                 else:
                     # 5秒経過後にマップとプレイヤーをリセット（スコアは維持）
                     game_map = [row[:] for row in original_map]
+                    map.draw_map(map_surface, game_map)
                     player.reset_position()
                     for enemy in enemies:
                         enemy.reset_position(game_map)                        
                     next_phase = False      
         else:
             # 通常描画・更新
-            map.draw_map(screen, game_map)
-            player.update(game_map)
-            player.check_dot_and_clear(game_map)
-            player.check_collision_with_enemy(enemies)            
+            screen.blit(map_surface, (0, 0))                     # 背景描画（キャッシュ）
+            player.update(game_map)                              # プレイヤーの移動処理
+
+            # ドットを取ったときだけマップを再描画
+            if player.check_dot_and_clear(game_map):
+                map.draw_map(map_surface, game_map)
+            player.check_collision_with_enemy(enemies)           # 敵との当たり判定
             player_pos = (player.x, player.y)
             for enemy in enemies:
-                enemy.update(game_map, player_pos)                
-            player.draw_charactor(screen)
+                enemy.update(game_map, player_pos)               # 敵の移動処理
+            player.draw_charactor(screen)                        # プレイヤー描画
             for enemy in enemies:
-                enemy.draw(screen)                
-            ui.draw(screen, player.get_score(), player.get_lifes())
+                enemy.draw(screen)                               # 敵描画
+            ui.draw(screen, player.get_score(), player.get_lifes())  # UI描画
 
         #game over判定
         if player.get_lifes() <= 0:
@@ -161,6 +170,7 @@ while running:
             player.reset_state()
             player.reset_position()
             game_map = [row[:] for row in original_map]
+            map.draw_map(map_surface, game_map)
             enemies = initialize_enemies(game_map)
             stage_bgm.play(-1,0,1000)
 

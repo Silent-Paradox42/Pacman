@@ -35,20 +35,16 @@ class create_map():
         
         return None,None
 
-    def draw_map(self,screen, map_data):
-        """
-        マップデータをもとに画面にタイル画像を描画する。
-        :param screen: pygameのSurface
-        :param map_data: 2次元リストのマップデータ
-        """
+    """マップデータを描画する"""
+    def draw_map(self, surface, map_data):
         for y, row in enumerate(map_data):
             for x, tile in enumerate(row):
                 if tile in [0,2]:
-                    screen.blit(self.tile_images['load'], (x * const.TILE_SIZE, y * const.TILE_SIZE))
+                    surface.blit(self.tile_images['load'], (x * const.TILE_SIZE, y * const.TILE_SIZE))
                 if tile == 1:
-                    screen.blit(self.tile_images['wall'], (x * const.TILE_SIZE, y * const.TILE_SIZE))
+                    surface.blit(self.tile_images['wall'], (x * const.TILE_SIZE, y * const.TILE_SIZE))
                 if tile == 2:
-                    screen.blit(self.tile_images['dot'], (x * const.TILE_SIZE + const.TILE_SIZE/2 - const.TILE_SIZE/8, y * const.TILE_SIZE + const.TILE_SIZE/2 - const.TILE_SIZE/8))
+                    surface.blit(self.tile_images['dot'], (x * const.TILE_SIZE + const.TILE_SIZE/2 - const.TILE_SIZE/8, y * const.TILE_SIZE + const.TILE_SIZE/2 - const.TILE_SIZE/8))
 
     #自動マップ生成機能
     def generate_map(self,size):
