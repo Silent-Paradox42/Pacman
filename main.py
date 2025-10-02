@@ -3,7 +3,7 @@ import pygame
 import sys
 import ui as Ui
 from constant import constant as const
-from soundpro import bgm  ,se as se
+from soundpro import bgm,se as se
 from player import Player
 from enemy import Enemy
 from assets.map.map import create_map

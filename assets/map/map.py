@@ -32,7 +32,6 @@ class create_map():
             self.map_data = MAP_DATA
             self.original_map = [row[:] for row in MAP_DATA]
             return MAP_DATA, self.original_map
-        
         return None,None
 
     """マップデータを描画する"""
@@ -125,6 +124,7 @@ class create_map():
                 maze[y][x] = 2  # 戻す
             else:
                 current_walls += 1
+
     # 連結性チェック（DFSなど）
     def is_fully_connected(self, maze):
         visited = [[False for _ in row] for row in maze]
@@ -139,7 +139,7 @@ class create_map():
             else:
                 continue
             break
-
+        
         # DFSで探索
         stack = [start]
         visited[start[0]][start[1]] = True
@@ -166,9 +166,7 @@ def main():
     pygame.init()
     screen = pygame.display.set_mode((640, 640))
     clock = pygame.time.Clock()
-
     map_data = create_map.load_map(const.MAP_DATA[0])
-
     running = True
     while running:
         screen.fill((0, 0, 0))
