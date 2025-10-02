@@ -26,7 +26,7 @@ def initialize_enemies(game_map):
     selected_positions = enemy_positions[:4]
 
     return [
-        Enemy("assets\\charactor\\Blinky.png", x * const.TILE_SIZE, y * const.TILE_SIZE)
+        Enemy("assets\\charactor\\black_company.png", x * const.TILE_SIZE, y * const.TILE_SIZE)
         for x, y in selected_positions
     ]
 

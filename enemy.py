@@ -11,7 +11,7 @@ class Enemy(charactor):
     敵キャラクタークラス。
     プレイヤーと同様にマップ上を移動し、分岐点でランダムに方向転換する。
     """
-    def __init__(self, img="assets\\charactor\\Blinky.png", x=5*const.CHAR_SIZE, y=5*const.CHAR_SIZE):
+    def __init__(self, img="assets\\charactor\\black_company.png", x=5*const.CHAR_SIZE, y=5*const.CHAR_SIZE):
         """
         敵キャラの初期化。
         :param img: キャラ画像パス
