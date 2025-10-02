@@ -1,4 +1,3 @@
-
 # プレイヤーキャラクターの挙動を定義するモジュール
 import pygame
 from drowchar import charactor as character
@@ -9,7 +8,7 @@ class Player(character):
     プレイヤーキャラクタークラス。
     方向キー入力や壁衝突時のUターン、停止などの挙動を管理する。
     """
-    def __init__(self, img="assets\\charactor\\Trollman.png", x=1, y=1, game_map=None):
+    def __init__(self, img=None, x=1, y=1, game_map=None):
         """
         プレイヤーの初期化。
         :param img: キャラ画像パス
@@ -19,9 +18,14 @@ class Player(character):
         :param lifes: 初期ライフ数
         :param score: 初期スコア
         """
-        super().__init__(img, x, y)
-        #self.x = x
-        #self.y = y
+        
+        self.img = img
+        if img:
+            self.image = pygame.image.load(img).convert_alpha()
+        else:
+            self.image = pygame.Surface((const.TILE_SIZE, const.TILE_SIZE))
+            self.image.fill((255, 0, 0))
+        super().__init__(img, x, y)        
         self.speed = 2
         self.direction = "right"  # 現在の進行方向
         self.next_direction = "right"  # 希望方向（キー入力でセット）
@@ -229,6 +233,7 @@ class Player(character):
         if self.lifes > 0:
             self.lifes -= 1
     
+    # プレイヤーが敵と衝突したか判定し、衝突したらライフを減らす
     def check_collision_with_enemy(self, enemies):
         if self.invincible or self.hit_flash:
             now = pygame.time.get_ticks()
@@ -247,6 +252,7 @@ class Player(character):
                 self.hit_flash_timer = pygame.time.get_ticks()
                 self.hit_flash_count = 0
                 break
+
     def reset_state(self):
         """
         スコアとライフを初期化。

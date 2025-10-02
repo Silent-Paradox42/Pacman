@@ -10,7 +10,7 @@ class charactor:
     キャラクターの基底クラス。
     プレイヤー・敵などの共通処理（画像管理・描画・向き変更）を持つ。
     """
-    def __init__(self, pict, x=1, y=1):
+    def __init__(self, pict=None, x=1, y=1):
         """
         キャラクター画像の読み込み・初期化。
         :param pict: 画像ファイルパス
