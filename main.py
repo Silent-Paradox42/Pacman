@@ -6,7 +6,7 @@ from constant import constant as const
 from soundpro import bgm,se as se
 from player import Player
 from enemy import Enemy
-from assets.map.map import create_map
+from map import create_map
 screen_size = (const.SCREEN_WIDTH, const.SCREEN_HEIGHT)
 
 # ドットがすべて消えたか判定する関数

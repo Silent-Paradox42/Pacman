@@ -1,6 +1,6 @@
 import pygame
 from player import Player
-from assets.map.map import create_map as map 
+from map import create_map as map 
 from constant import constant as const
 import sys
 import soundpro
