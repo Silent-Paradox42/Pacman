@@ -1,10 +1,8 @@
-
 # 敵キャラクターの挙動を定義するモジュール
 import pygame
 import random
 from drowchar import charactor
 from constant import constant as const
-
 
 class Enemy(charactor):
     """
