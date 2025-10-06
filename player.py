@@ -51,6 +51,10 @@ class Player(character):
         self.hit_flash_timer = 0
         self.hit_flash_count = 0
 
+        self.beam_charge = 0              # 現在のチャージ量
+        self.beam_charge_max = 100        # 最大チャージ量
+        self.can_fire_beam = False        # 発射可能かどうか
+
         if game_map and not self.can_move_to(self.x, self.y, game_map):
             import tkinter
             root = tkinter.Tk()
@@ -185,7 +189,7 @@ class Player(character):
         return True
 
     def check_dot_and_clear(self, game_map):
-        """プレイヤーがドットを取ったか判定し、取ったら消す。スコア加算。
+        """プレイヤーがドットを取ったか判定し、取ったら消す。スコア加算とチャージ加算。
         :param game_map: マップデータ"""
         tile_x = self.x // const.TILE_SIZE
         tile_y = self.y // const.TILE_SIZE
@@ -193,9 +197,15 @@ class Player(character):
             if game_map[tile_y][tile_x] == 2:
                 game_map[tile_y][tile_x] = 0
                 self.score += 10  # スコア加算
+
+                # チャージ加算処理
+                self.beam_charge = min(self.beam_charge + 10, self.beam_charge_max)
+                if self.beam_charge >= self.beam_charge_max:
+                    self.can_fire_beam = True
+
                 return True
         return False
-
+    
     def reset_position(self):
         """
         プレイヤーを初期位置にリセット。
@@ -253,10 +263,13 @@ class Player(character):
                 self.hit_flash_count = 0
                 break
 
+    def fire_beam(self):
+        if self.can_fire_beam:
+            print("ビーム発射！")  # 実際の処理は後で追加
+            self.beam_charge = 0
+            self.can_fire_beam = False
+
     def reset_state(self):
-        """
-        スコアとライフを初期化。
-        """
         self.score = 0
         self.lifes = 3
         self.reset_position()
@@ -264,3 +277,6 @@ class Player(character):
         self.hit_flash = False
         self.stuck = False
         self.wait_count = 0
+        self.beam_charge = 0
+        self.can_fire_beam = False
+

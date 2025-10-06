@@ -98,6 +98,8 @@ while running:
                     game_map = [row[:] for row in original_map]
                     map.draw_map(map_surface, game_map)
                     stage_bgm.play(-1,0,1000)   # BGM再生
+            elif event.key == pygame.K_SPACE:
+                player.fire_beam()
 
     # playerが敵にあたった時の処理と無敵時間調整
     if player.hit_flash:
@@ -112,6 +114,7 @@ while running:
                 for enemy in enemies:
                     enemy.draw(screen)                    
                 ui.draw(screen, player.get_score(), player.get_lifes())
+                ui.draw_beam_charge_bar(screen, player.beam_charge, player.beam_charge_max)
             if now - player.hit_flash_timer > (player.hit_flash_count + 1) * 200:
                 player.hit_flash_count += 1
         else:

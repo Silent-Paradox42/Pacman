@@ -158,4 +158,3 @@ class Enemy(charactor):
                     valid_positions.append((x * const.CHAR_SIZE, y * const.CHAR_SIZE))
         if valid_positions:
             self.x, self.y = random.choice(valid_positions)
-

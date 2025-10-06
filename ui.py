@@ -24,16 +24,39 @@ class GameUi():
     def __init__(self):
         pass
 
-    #スコアとライフの描画処理
+    # スコアとライフの描画処理
     def draw(self, screen, score=0, lives=3):
         font = pygame.font.SysFont("Snap ITC", 18)
         text = font.render(f"Score: {score}    Life : {lives}", True, (255, 255, 255))
         screen.blit(text,(10,10))
 
-    #ゲームオーバー判定(仮)
+    # ビームチャージバーの描画処理
+    def draw_beam_charge_bar(self, screen, charge, max_charge):
+        """
+        ビームチャージバーを画面下部に描画する。
+        :param screen: 描画対象のSurface
+        :param charge: 現在のチャージ量
+        :param max_charge: 最大チャージ量
+        """
+        bar_width = 200
+        bar_height = 20
+        x, y = 20, const.SCREEN_HEIGHT - 40
+
+        # 背景バー
+        pygame.draw.rect(screen, (100, 100, 100), (x, y, bar_width, bar_height))
+
+        # チャージ量に応じたバー
+        fill_width = int(bar_width * (charge / max_charge))
+        pygame.draw.rect(screen, (0, 255, 255), (x, y, fill_width, bar_height))
+
+        # 発射可能ならバーを光らせる
+        if charge >= max_charge:
+            pygame.draw.rect(screen, (255, 255, 0), (x, y, bar_width, bar_height), 2)
+
+    # ゲームオーバー判定(仮)
     def is_game_over(self,lives):
         return lives <= 0
-
+    
 class PauseMenu():
     def __init__(self, scrsize):
         self.key = None
@@ -64,7 +87,6 @@ class PauseMenu():
                 elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                     waiting = False
                     self.key = pygame.K_ESCAPE
-
                 elif event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
                     waiting = False
                     self.key = pygame.K_RETURN
@@ -131,15 +153,11 @@ class GameOverMenu():
         self.small_font = pygame.font.SysFont("yumincho", 36)
         self.subscreen = pygame.surface.Surface((scrsize[0] ,scrsize[1]),pygame.SRCALPHA)
         self.subscreen.fill((0, 52, 0,150))  # 半透明の緑背景
-        
-        self.bgm = soundpro.bgm('assets\\bgm\\GameOver_maou_bgm_8bit20.mp3')
-        
+        self.bgm = soundpro.bgm('assets\\bgm\\GameOver_maou_bgm_8bit20.mp3')  
         title_prompt = self.font.render("げ～むお～ば～～", True, (0, 200, 0))
         self.subscreen.blit(title_prompt, (self.subscreen.get_width() // 2 - title_prompt.get_width() // 2, 100))
-        
         self.command = ["【Enter】リトライ","【Q】シャットダウン"]
-        add_grahical_prompt(self.subscreen,self.command,self.small_font,color=(0,200,0))
-        
+        add_grahical_prompt(self.subscreen,self.command,self.small_font,color=(0,200,0))    
 
     def draw(self,screen):
         screen.blit(self.subscreen,(0,0))
@@ -163,15 +181,43 @@ class GameOverMenu():
             pygame.display.flip()
             pygame.time.Clock().tick(20)  # 60FPSでループ
 
+class GameState:
+    """
+    ゲームのスコアや残機などの状態を管理するクラス。
+    """
+    def __init__(self):
+        """
+        ゲーム状態の初期化（スコア・残機）
+        """
+        self.score = 0
+        self.lives = 3
+
+    def add_score(self, points):
+        """
+        スコアを加算する。
+        :param points: 加算する得点
+        """
+        self.score += points
+
+    def lose_life(self):
+        """
+        残機を1減らし、ゲームオーバー判定を返す。
+        :return: "game_over" or "continue"
+        """
+        self.lives -= 1
+        if self.lives <= 0:
+            return "game_over"
+        return "continue"
+
 #デバッグメイン
 def main():
     pygame.init()
     screen = pygame.display.set_mode((640, 640))
     clock = pygame.time.Clock()
     go = GameOverMenu(screen)
-    
     game_point = GameUi()
     player = Player("assets\\charactor\\pacman.png", 1 * 32, 1 * 32)
+    player.beam_charge = 50  # 画面に半分のバーが表示される #テスト
 
     running = True
     while running:
@@ -186,7 +232,8 @@ def main():
         player.update([])
         player.draw(screen)
         player.draw_charactor(screen)
-        game_point.draw(screen)
+        game_point.draw(screen, player.get_score(), player.get_lifes())  # スコアとライフ表示
+        game_point.draw_beam_charge_bar(screen, player.beam_charge, player.beam_charge_max)  # チャージバー表示
         pygame.display.flip()
         clock.tick(60)
 
