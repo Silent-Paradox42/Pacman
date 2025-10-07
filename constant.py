@@ -1,11 +1,13 @@
-import tkinter as tk  # GUIアプリケーション作成のための標準的なPythonインターフェース
-import pygame
-class constant():
+import tkinter # GUIアプリケーション作成のための標準的なPythonインターフェース
+import os
+
+class constant:
     TILE_SIZE = 40
     CHAR_SIZE = 40
     GRID_SIZE = 21
-    SCREEN_WIDTH = TILE_SIZE  * GRID_SIZE
+    SCREEN_WIDTH = TILE_SIZE * GRID_SIZE
     SCREEN_HEIGHT = TILE_SIZE * GRID_SIZE
+    SCREEN_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)  # ← 追加
     FPS = 60
     PLAYER_SPEED = 2
     ENEMY_SPEED = 2
@@ -24,50 +26,55 @@ class constant():
     LEVEL_UP_SCORE = 1000
     MAX_LEVEL = 5
     DEBUG_MODE = False
-    INPUT_TIME = 10000          #入力時間(ms)
-    KONAMI_CODE = [
-        pygame.K_UP, pygame.K_UP,
-        pygame.K_DOWN, pygame.K_DOWN,
-        pygame.K_LEFT, pygame.K_RIGHT,
-        pygame.K_LEFT, pygame.K_RIGHT,
-        pygame.K_b, pygame.K_a
-    ]
-    MAP_DATA={
-    1:'assets/map/stage1.csv',
-    2:'assets/map/stage2.csv',
-    3:'assets/map/sample_stage3.csv',
-    90:'assets/map/pacman_stage.csv',
-    91:'assets/map/sample_stage.csv',
+    INPUT_TIME = 10000
+    NEXT_FONT_SIZE = 100
+    MAP_DATA = {
+        1: 'assets/map/stage1.csv',
+        2: 'assets/map/stage2.csv',
+        3: 'assets/map/sample_stage3.csv',
+        90: 'assets/map/pacman_stage.csv',
+        91: 'assets/map/sample_stage.csv',
     }
 
-    def __init__(self):
-        self.aa = self.TILE_SIZE
-        dwith,dheight = self.get_screen_size()
-
+    @staticmethod # staticmethodデコレータを使用して、インスタンス化せずに呼び出せるようにする
     def get_screen_size():
-        """
-        使用しているPCの画面サイズ（幅と高さ）を辞書形式で返します。
+        """画面の作業領域のサイズを取得する関数"""
+        try:
+            import ctypes
+            from ctypes import wintypes
 
-        tkinterの機能を使用して、現在の画面解像度を取得します。
+            user32 = ctypes.windll.user32
+            work_area = wintypes.RECT()
+            SPI_GETWORKAREA = 0x0030
+            result = user32.SystemParametersInfoW(SPI_GETWORKAREA, 0, ctypes.byref(work_area), 0)
 
-        Returns:
-            list of dict: 画面の幅と高さをキーとする辞書のリスト。
-        """
+            if result:
+                width = work_area.right - work_area.left
+                height = work_area.bottom - work_area.top
+                return (width, height)
+            else:
+                return None  # API呼び出し失敗時
+        except Exception as e:
+            print(f"get_screen_size fallback: {e}")
+            try:
+                root = tkinter.Tk()
+                root.withdraw()
+                width = root.winfo_screenwidth()
+                height = root.winfo_screenheight()
+                root.destroy()
+                return (width, height)
+            except Exception as e:
+                print(f"tkinter fallback failed: {e}")
+                return None
         
-        # tkinterのルートウィンドウを作成
-        root = tk.Tk()  
-        
-        # ウィンドウを表示せずに実行
-        root.withdraw()  
-        
-        # 画面の幅を取得
-        width = root.winfo_screenwidth()  
-        
-        # 画面の高さを取得
-        height = root.winfo_screenheight()  
-        
-        # ルートウィンドウを破棄
-        root.destroy()  
-        
-        # 画面サイズを辞書形式でリストにして返す
-        return (width, height)
+    def center_window():
+        """ウィンドウ位置を画面中央に設定する関数"""
+        screen_size = constant.get_screen_size()
+        if screen_size is None:
+            print("画面サイズの取得に失敗しました。ウィンドウ位置を設定できません。")
+            return
+
+        screen_width, screen_height = screen_size
+        x = (screen_width - constant.SCREEN_WIDTH) // 2
+        y = (screen_height - constant.SCREEN_HEIGHT) // 2
+        os.environ['SDL_VIDEO_WINDOW_POS'] = f"{x},{y}"

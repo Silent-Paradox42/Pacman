@@ -1,8 +1,5 @@
 import pygame
-from player import Player
-from map import create_map as map 
 from constant import constant as const
-import sys
 import soundpro
 
 pygame.init()
@@ -58,17 +55,15 @@ class GameUi():
         return lives <= 0
     
 class PauseMenu():
-    def __init__(self, scrsize):
+    def __init__(self, screen):
         self.key = None
         self.font = pygame.font.SysFont("yumincho", 72)
         self.small_font = pygame.font.SysFont("yumincho", 36)
-        self.subscreen = pygame.surface.Surface((scrsize[0] ,scrsize[1]),pygame.SRCALPHA)
+        self.subscreen = pygame.Surface(screen.get_size(),pygame.SRCALPHA)
         self.subscreen.fill((0, 0, 50,150))  # 半透明の緑背景
-
         title_prompt = self.font.render("ぽ～～ず", True, (0, 200, 0))
         self.subscreen.blit(title_prompt, (self.subscreen.get_width() // 2 - title_prompt.get_width() // 2, 100))
         self.opencount = 0
-        
         command = ["【Enter】リトライ","【Esc】ぽ～～ず解除","【Q】シャットダウン"]
         add_grahical_prompt(self.subscreen,command,self.small_font)
 
@@ -94,26 +89,21 @@ class PauseMenu():
             pygame.time.Clock().tick(20)  # 60FPSでループ
 
 class StartMenu():
-    def __init__(self, scrsize):
+    def __init__(self, screen):
         self.font = pygame.font.SysFont("yumincho", 48)
         self.small_font = pygame.font.SysFont("yumincho", 36)
-        self.subscreen = pygame.surface.Surface((scrsize[0] ,scrsize[1]),pygame.SRCALPHA)
-        
+        self.subscreen = pygame.Surface(screen.get_size(),pygame.SRCALPHA)
         self.bgm = soundpro.bgm("assets\\bgm\\title_maou_bgm_ethnic13.mp3")
         self.image = pygame.image.load("assets\\title\\titleSample.png")
-        
         self.subscreen.fill((0, 0, 50))  # ダークブルー背景
         self.subscreen.blit(self.image, (self.subscreen.get_width() // 2 - self.image.get_width() // 2, 50))
-        
         self.command = [
             "【1】通常マップでスタート",
             "【2】ランダムマップでスタート",
             "",
             "※プレイ中【Esc】でpause可能"
         ]
-
         add_grahical_prompt(self.subscreen,self.command,self.small_font,color=(200,200,200))
-
         self.flg_stage_command = False
 
     def draw(self,screen):
@@ -148,10 +138,10 @@ class StartMenu():
             pygame.time.Clock().tick(20)  # 60FPSでループ
 
 class GameOverMenu():
-    def __init__(self, scrsize):
+    def __init__(self, screen):
         self.font = pygame.font.SysFont("yumincho", 72)
         self.small_font = pygame.font.SysFont("yumincho", 36)
-        self.subscreen = pygame.surface.Surface((scrsize[0] ,scrsize[1]),pygame.SRCALPHA)
+        self.subscreen = pygame.Surface(screen.get_size(),pygame.SRCALPHA)
         self.subscreen.fill((0, 52, 0,150))  # 半透明の緑背景
         self.bgm = soundpro.bgm('assets\\bgm\\GameOver_maou_bgm_8bit20.mp3')  
         title_prompt = self.font.render("げ～むお～ば～～", True, (0, 200, 0))
@@ -208,37 +198,3 @@ class GameState:
         if self.lives <= 0:
             return "game_over"
         return "continue"
-
-#デバッグメイン
-def main():
-    pygame.init()
-    screen = pygame.display.set_mode((640, 640))
-    clock = pygame.time.Clock()
-    go = GameOverMenu(screen)
-    game_point = GameUi()
-    player = Player("assets\\charactor\\pacman.png", 1 * 32, 1 * 32)
-    player.beam_charge = 50  # 画面に半分のバーが表示される #テスト
-
-    running = True
-    while running:
-        screen.fill((0, 0, 0))
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            if event.type == pygame.KEYDOWN:
-                go.draw()
-
-        player.update([])
-        player.draw(screen)
-        player.draw_charactor(screen)
-        game_point.draw(screen, player.get_score(), player.get_lifes())  # スコアとライフ表示
-        game_point.draw_beam_charge_bar(screen, player.beam_charge, player.beam_charge_max)  # チャージバー表示
-        pygame.display.flip()
-        clock.tick(60)
-
-    pygame.quit()
-    sys.exit()
-
-if __name__ == "__main__":
-    main()

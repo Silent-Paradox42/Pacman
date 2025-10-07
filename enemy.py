@@ -24,6 +24,23 @@ class Enemy(charactor):
         self.direction = random.choice(["left", "right", "up", "down"])
         self.was_at_branch = False  # 前フレームで分岐点だったか
 
+    # 敵キャラを初期化する関数
+    def initialize_enemies(game_map):
+        enemy_positions = []
+        for y, row in enumerate(game_map):
+            for x, cell in enumerate(row):
+                if cell == 2 or cell == 0:
+                    enemy_positions.append((x, y))
+
+        center = (len(game_map[0]) // 2, len(game_map) // 2)
+        enemy_positions.sort(key=lambda pos: (pos[0] - center[0]) ** 2 + (pos[1] - center[1]) ** 2)
+        selected_positions = enemy_positions[:4]
+
+        return [
+            Enemy("assets\\charactor\\black_company.png", x * const.TILE_SIZE, y * const.TILE_SIZE)
+            for x, y in selected_positions
+        ]
+
     def update(self, game_map, player_pos=None):
         """
         毎フレーム呼ばれる。敵キャラの移動・方向転換ロジック。

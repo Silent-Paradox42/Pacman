@@ -157,29 +157,7 @@ class create_map():
                 if maze[y][x] == 2 and not visited[y][x]:
                     return False
         return True
-
-
-def main():
-    """
-    単体テスト用のメイン処理。マップのみを表示する。
-    """
-    pygame.init()
-    screen = pygame.display.set_mode((640, 640))
-    clock = pygame.time.Clock()
-    map_data = create_map.load_map(const.MAP_DATA[0])
-    running = True
-    while running:
-        screen.fill((0, 0, 0))
-        create_map.ldraw_map(screen, map_data)
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-
-        pygame.display.flip()
-        clock.tick(60)
-
-    pygame.quit()
-
-if __name__ == "__main__":
-    main()
+    
+    # ドットがすべて消えたか判定する関数
+    def all_dots_cleared(map_data):
+        return all(2 not in row for row in map_data)

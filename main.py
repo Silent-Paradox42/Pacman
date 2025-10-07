@@ -1,55 +1,48 @@
-# ゲームのメイン処理を行うモジュール
+"""メイン処理"""
 import pygame
 import sys
 import ui as Ui
+import os
+import ctypes
 from constant import constant as const
 from soundpro import bgm,se as se
 from player import Player
 from enemy import Enemy
 from map import create_map
-screen_size = (const.SCREEN_WIDTH, const.SCREEN_HEIGHT)
 
-# ドットがすべて消えたか判定する関数
-def all_dots_cleared(map_data):
-    return all(2 not in row for row in map_data)
+# DPI対応
+try:
+    ctypes.windll.user32.SetProcessDPIAware()
+except:
+    pass
 
-# 敵キャラを初期化する関数
-def initialize_enemies(game_map):
-    enemy_positions = []
-    for y, row in enumerate(game_map):
-        for x, cell in enumerate(row):
-            if cell == 2 or cell == 0:
-                enemy_positions.append((x, y))
+# 画面サイズ取得
+user32 = ctypes.windll.user32
+screen_width = user32.GetSystemMetrics(0)
+screen_height = user32.GetSystemMetrics(1)
+taskbar_height = 40
 
-    center = (len(game_map[0]) // 2, len(game_map) // 2)
-    enemy_positions.sort(key=lambda pos: (pos[0] - center[0]) ** 2 + (pos[1] - center[1]) ** 2)
-    selected_positions = enemy_positions[:4]
+# ウィンドウ位置を左上に固定
+os.environ['SDL_VIDEO_WINDOW_POS'] = "0,0"
 
-    return [
-        Enemy("assets\\charactor\\black_company.png", x * const.TILE_SIZE, y * const.TILE_SIZE)
-        for x, y in selected_positions
-    ]
-
-###メイン処理###
-# Pygame 初期化
 pygame.init()
-next_font = pygame.font.Font(None, 100)
+screen_size = (screen_width, screen_height - taskbar_height)
 screen = pygame.display.set_mode(screen_size)
 pygame.display.set_caption("Pacman Player and Enemy Test")
 clock = pygame.time.Clock()
 
+# フォント再定義
+next_font = pygame.font.Font(None, const.NEXT_FONT_SIZE)
+
 # uiの初期化
 ui = Ui.GameUi()
-menu = Ui.StartMenu(screen_size)
-go = Ui.GameOverMenu(screen_size)
-pause = Ui.PauseMenu(screen_size)
+menu = Ui.StartMenu(screen)
+go = Ui.GameOverMenu(screen)
+pause = Ui.PauseMenu(screen)
 
-# スタートメニューの表示
-menu.draw(screen)
-stage_bgm = bgm("assets\\bgm\\base2_maou_bgm_healing15.mp3")
-
-# マップの初期化，設定
-map = create_map()
+menu.draw(screen) # スタートメニューの表示
+stage_bgm = bgm("assets\\bgm\\base2_maou_bgm_healing15.mp3") # BGMの読み込み
+map = create_map() # マップオブジェクトの作成
 
 # マップデータの読み込みまたは生成
 if not menu.flg_stage_command:
@@ -61,13 +54,12 @@ else:
     game_map = map.generate_map(21)
     original_map = [row[:] for row in game_map]
 
-# マップ描画用Surfaceの作成
-map_surface = pygame.Surface(screen_size)
-map.draw_map(map_surface, game_map)
+map_surface = pygame.Surface(screen_size) # マップ描画用Surfaceの作成
+map.draw_map(map_surface, game_map) # マップの描画
 
 # プレイヤーと敵キャラの初期化
 player = Player("assets\\charactor\\conkichi01.png", 0 * const.TILE_SIZE, 0 * const.TILE_SIZE, game_map) #マップデータを渡す
-enemies = initialize_enemies(game_map)
+enemies = Enemy.initialize_enemies(game_map)
 next_phase = False
 next_timer_start = 0
 
@@ -124,7 +116,7 @@ while running:
             player.hit_flash = False
     else:
         # ドットがすべて消えたか判定
-        if all_dots_cleared(game_map):
+        if create_map.all_dots_cleared(game_map):
             if not next_phase:
                 next_phase = True
                 next_timer_start = pygame.time.get_ticks()
@@ -140,7 +132,7 @@ while running:
 
                     # 「NEXT」テキストを中央に表示
                     text = next_font.render("NEXT", True, (255, 255, 255))
-                    text_rect = text.get_rect(center=(const.SCREEN_WIDTH // 2, const.SCREEN_HEIGHT // 2))
+                    text_rect = text.get_rect(center=(screen_size[0] // 2, screen_size[1] // 2))
                     screen.blit(text, text_rect)
                 else:
                     # 5秒経過後にマップとプレイヤーをリセット（スコアは維持）
@@ -174,12 +166,12 @@ while running:
             player.reset_position()
             game_map = [row[:] for row in original_map]
             map.draw_map(map_surface, game_map)
-            enemies = initialize_enemies(game_map)
+            enemies = Enemy.initialize_enemies(game_map)
             stage_bgm.play(-1,0,1000)
 
     # 画面更新
     pygame.display.flip()
     clock.tick(60)# ゲーム終了処理
 
-pygame.quit()
-sys.exit()
+pygame.quit() # pygameの終了
+sys.exit() # プログラムの終了

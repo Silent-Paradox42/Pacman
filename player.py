@@ -1,9 +1,9 @@
-# プレイヤーキャラクターの挙動を定義するモジュール
+"""プレイヤークラスモジュール"""
 import pygame
-from drowchar import charactor as character
+from drowchar import charactor
 from constant import constant
 
-class Player(character):
+class Player(charactor):
     """
     プレイヤーキャラクタークラス。
     方向キー入力や壁衝突時のUターン、停止などの挙動を管理する。
@@ -18,53 +18,50 @@ class Player(character):
         :param lifes: 初期ライフ数
         :param score: 初期スコア
         """
-        
-        self.img = img
+        self.img = img # キャラ画像パス
+
+        # 画像が指定されていない場合はデフォルトの赤い四角を使用
         if img:
             self.image = pygame.image.load(img).convert_alpha()
         else:
             self.image = pygame.Surface((constant.TILE_SIZE, constant.TILE_SIZE))
             self.image.fill((255, 0, 0))
-        super().__init__(img, x, y)        
-        self.speed = 2
+        
+        super().__init__(img, x, y) # 親クラスの初期化     
+        self.speed = 2 # 移動速度（px/フレーム）
         self.direction = "right"  # 現在の進行方向
         self.next_direction = "right"  # 希望方向（キー入力でセット）
-
         self.wait_count = 0  # 壁にぶつかった時の待機カウンタ
         self.wait_max = 10   # 何フレーム待つか（調整可）
         self.stuck = False   # 完全停止状態かどうか
-
         self.score = 0       # スコア
         self.lifes = 3       # ライフ数
-
-        self.x = x * constant.TILE_SIZE
-        self.y = y * constant.TILE_SIZE
-
-        self.start_x = self.x
-        self.start_y = self.y
-
-        self.invincible = False
-        self.invincible_timer = 0
+        self.x = x * constant.TILE_SIZE # 画面上のピクセル座標に変換
+        self.y = y * constant.TILE_SIZE # 画面上のピクセル座標に変換
+        self.start_x = self.x # 初期位置を保存
+        self.start_y = self.y # 初期位置を保存
+        self.invincible = False # 無敵状態かどうか
+        self.invincible_timer = 0 # 無敵状態のタイマー
         self.invincible_duration = 2000  # ミリ秒（2秒間無敵）
-
-        self.hit_flash = False
-        self.hit_flash_timer = 0
-        self.hit_flash_count = 0
-
+        self.hit_flash = False # ダメージを受けた際の点滅状態かどうか
+        self.hit_flash_timer = 0 # 点滅状態のタイマー
+        self.hit_flash_count = 0 # 点滅回数カウンタ
         self.beam_charge = 0              # 現在のチャージ量
         self.beam_charge_max = 100        # 最大チャージ量
         self.can_fire_beam = False        # 発射可能かどうか
 
+        # マップ外に初期位置がある場合、マップ内の最初の通路マスに移動
         if game_map and not self.can_move_to(self.x, self.y, game_map):
             import tkinter
             root = tkinter.Tk()
             root.withdraw()
             root.destroy()
-
-            # マップ内の最初の通路マス（0,2）を探して移動
             found = False
+            # マップ内の最初の通路マス(0または2)を探す
             for gy, row in enumerate(game_map):
+                # 各行を走査
                 for gx, cell in enumerate(row):
+                    # 通路マスを発見したらそこに移動
                     if cell in [0, 2]:
                         self.x = gx * constant.TILE_SIZE
                         self.y = gy * constant.TILE_SIZE
@@ -72,6 +69,7 @@ class Player(character):
                         self.start_y = self.y
                         found = True
                         break
+                # 外側のループも抜ける
                 if found:
                     break
 
@@ -279,4 +277,3 @@ class Player(character):
         self.wait_count = 0
         self.beam_charge = 0
         self.can_fire_beam = False
-
