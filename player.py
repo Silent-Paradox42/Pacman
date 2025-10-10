@@ -1,7 +1,7 @@
 """プレイヤークラスモジュール"""
 import pygame
 from drowchar import charactor
-from constant import constant
+from constant import const
 
 class Player(charactor):
     """
@@ -24,7 +24,7 @@ class Player(charactor):
         if img:
             self.image = pygame.image.load(img).convert_alpha()
         else:
-            self.image = pygame.Surface((constant.TILE_SIZE, constant.TILE_SIZE))
+            self.image = pygame.Surface((const.TILE_SIZE, const.TILE_SIZE))
             self.image.fill((255, 0, 0))
         
         super().__init__(img, x, y) # 親クラスの初期化     
@@ -36,8 +36,8 @@ class Player(charactor):
         self.stuck = False   # 完全停止状態かどうか
         self.score = 0       # スコア
         self.lifes = 3       # ライフ数
-        self.x = x * constant.TILE_SIZE # 画面上のピクセル座標に変換
-        self.y = y * constant.TILE_SIZE # 画面上のピクセル座標に変換
+        self.x = x * const.TILE_SIZE # 画面上のピクセル座標に変換
+        self.y = y * const.TILE_SIZE # 画面上のピクセル座標に変換
         self.start_x = self.x # 初期位置を保存
         self.start_y = self.y # 初期位置を保存
         self.invincible = False # 無敵状態かどうか
@@ -63,8 +63,8 @@ class Player(charactor):
                 for gx, cell in enumerate(row):
                     # 通路マスを発見したらそこに移動
                     if cell in [0, 2]:
-                        self.x = gx * constant.TILE_SIZE
-                        self.y = gy * constant.TILE_SIZE
+                        self.x = gx * const.TILE_SIZE
+                        self.y = gy * const.TILE_SIZE
                         self.start_x = self.x
                         self.start_y = self.y
                         found = True
@@ -81,7 +81,7 @@ class Player(charactor):
         :return: Trueなら中心付近
         """
         margin = 12  # 許容誤差（px）
-        return abs((self.x % constant.TILE_SIZE) - constant.TILE_SIZE // 2) < margin and abs((self.y % constant.TILE_SIZE) - constant.TILE_SIZE // 2) < margin
+        return abs((self.x % const.TILE_SIZE) - const.TILE_SIZE // 2) < margin and abs((self.y % const.TILE_SIZE) - const.TILE_SIZE // 2) < margin
 
     def set_direction(self, direction):
         """
@@ -167,7 +167,7 @@ class Player(charactor):
         キャラの4隅が通路(0,2)上にあるかチェック。
         :return: Trueなら移動可能
         """
-        CHAR_SIZE = constant.TILE_SIZE  # または self.image.get_width() などで取得
+        CHAR_SIZE = const.TILE_SIZE  # または self.image.get_width() などで取得
 
         corners = [
             (x, y),  # 左上
@@ -177,8 +177,8 @@ class Player(charactor):
         ]
 
         for cx, cy in corners:
-            grid_x = cx // constant.TILE_SIZE
-            grid_y = cy // constant.TILE_SIZE
+            grid_x = cx // const.TILE_SIZE
+            grid_y = cy // const.TILE_SIZE
             if not (0 <= grid_y < len(game_map) and 0 <= grid_x < len(game_map[0])):
                 return False
             if game_map[grid_y][grid_x] not in [0, 2]:
@@ -189,8 +189,8 @@ class Player(charactor):
     def check_dot_and_clear(self, game_map):
         """プレイヤーがドットを取ったか判定し、取ったら消す。スコア加算とチャージ加算。
         :param game_map: マップデータ"""
-        tile_x = self.x // constant.TILE_SIZE
-        tile_y = self.y // constant.TILE_SIZE
+        tile_x = self.x // const.TILE_SIZE
+        tile_y = self.y // const.TILE_SIZE
         if 0 <= tile_y < len(game_map) and 0 <= tile_x < len(game_map[0]):
             if game_map[tile_y][tile_x] == 2:
                 game_map[tile_y][tile_x] = 0
@@ -252,7 +252,7 @@ class Player(charactor):
         for enemy in enemies:
             dx = abs(self.x - enemy.x)
             dy = abs(self.y - enemy.y)
-            if dx < constant.TILE_SIZE // 2 and dy < constant.TILE_SIZE // 2:
+            if dx < const.TILE_SIZE // 2 and dy < const.TILE_SIZE // 2:
                 self.lost_life()
                 self.invincible = True
                 self.invincible_timer = pygame.time.get_ticks()
