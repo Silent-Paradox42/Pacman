@@ -99,20 +99,26 @@ while running:
         if player.hit_flash_count < 6:
             if (now - player.hit_flash_timer) // 200 % 2 == 0:
                 screen.fill((255, 255, 255))  # 白で塗りつぶし
-            # 通常描画・更新
             else:
                 screen.blit(map_surface, (0, 0))
                 player.draw_charactor(screen)
                 for enemy in enemies:
-                    enemy.draw(screen)                    
-                ui.draw(screen, player.get_score(), player.get_lifes())
-                ui.draw_beam_charge_bar(screen, player.beam_charge, player.beam_charge_max)
+                    enemy.draw(screen)
+                ui.draw(
+                    screen,
+                    score=player.get_score(),
+                    lives=player.get_lifes(),
+                    charge=player.beam_charge,
+                    max_charge=player.beam_charge_max
+                )
             if now - player.hit_flash_timer > (player.hit_flash_count + 1) * 200:
                 player.hit_flash_count += 1
-        else:
+        else:  # 無敵時間終了
             player.reset_position()
             for enemy in enemies:
-                enemy.reset_position(game_map)                
+                enemy.reset_position(game_map)
+            player.beam_charge = 0  # ← チャージをリセット
+            player.can_fire_beam = False  # ← 発射可能フラグもリセット（任意）
             player.hit_flash = False
     else:
         # ドットがすべて消えたか判定
@@ -145,8 +151,7 @@ while running:
         else:
             # 通常描画・更新
             screen.blit(map_surface, (0, 0))                     # 背景描画（キャッシュ）
-            player.update(game_map)                              # プレイヤーの移動処理
-
+            player.update(game_map) #毎フレーム呼ばれるプレイヤーの移動処理
             # ドットを取ったときだけマップを再描画
             if player.check_dot_and_clear(game_map):
                 map.draw_map(map_surface, game_map)
@@ -157,7 +162,13 @@ while running:
             player.draw_charactor(screen)                        # プレイヤー描画
             for enemy in enemies:
                 enemy.draw(screen)                               # 敵描画
-            ui.draw(screen, player.get_score(), player.get_lifes())  # UI描画
+            ui.draw(
+                screen,
+                score=player.get_score(),
+                lives=player.get_lifes(),
+                charge=player.beam_charge,
+                max_charge=player.beam_charge_max
+            )
 
         #game over判定
         if player.get_lifes() <= 0:

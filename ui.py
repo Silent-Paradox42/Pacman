@@ -1,5 +1,5 @@
 import pygame
-from constant import constant as const
+from constant import constant
 import soundpro
 
 pygame.init()
@@ -22,22 +22,15 @@ class GameUi():
         pass
 
     # スコアとライフの描画処理
-    def draw(self, screen, score=0, lives=3):
+    def draw(self, screen, score=0, lives=3, charge=0, max_charge=100):
         font = pygame.font.SysFont("Snap ITC", 18)
         text = font.render(f"Score: {score}    Life : {lives}", True, (255, 255, 255))
         screen.blit(text,(10,10))
-
-    # ビームチャージバーの描画処理
-    def draw_beam_charge_bar(self, screen, charge, max_charge):
-        """
-        ビームチャージバーを画面下部に描画する。
-        :param screen: 描画対象のSurface
-        :param charge: 現在のチャージ量
-        :param max_charge: 最大チャージ量
-        """
+        score_text_width = text.get_width()
         bar_width = 200
         bar_height = 20
-        x, y = 20, const.SCREEN_HEIGHT - 40
+        x = 10 + score_text_width + 20 # スコア表示の右に20pxの余白を追加
+        y = 10 # スコアと同じ高さに揃える
 
         # 背景バー
         pygame.draw.rect(screen, (100, 100, 100), (x, y, bar_width, bar_height))

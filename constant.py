@@ -1,5 +1,6 @@
 import tkinter # GUIアプリケーション作成のための標準的なPythonインターフェース
 import os
+import pygame
 
 class constant:
     TILE_SIZE = 40
@@ -66,15 +67,3 @@ class constant:
             except Exception as e:
                 print(f"tkinter fallback failed: {e}")
                 return None
-        
-    def center_window():
-        """ウィンドウ位置を画面中央に設定する関数"""
-        screen_size = constant.get_screen_size()
-        if screen_size is None:
-            print("画面サイズの取得に失敗しました。ウィンドウ位置を設定できません。")
-            return
-
-        screen_width, screen_height = screen_size
-        x = (screen_width - constant.SCREEN_WIDTH) // 2
-        y = (screen_height - constant.SCREEN_HEIGHT) // 2
-        os.environ['SDL_VIDEO_WINDOW_POS'] = f"{x},{y}"
