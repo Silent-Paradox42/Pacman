@@ -1,8 +1,8 @@
 import tkinter # GUIアプリケーション作成のための標準的なPythonインターフェース
-import os
-import pygame
+import ctypes
+from ctypes import wintypes
 
-class constant:
+class const:
     TILE_SIZE = 40
     CHAR_SIZE = 40
     GRID_SIZE = 21
@@ -36,6 +36,28 @@ class constant:
         90: 'assets/map/pacman_stage.csv',
         91: 'assets/map/sample_stage.csv',
     }
+
+    # --- 画面サイズ取得(作業領域) ---
+    def get_screen_size():
+        try:
+            user32 = ctypes.windll.user32
+            work_area = wintypes.RECT()
+            SPI_GETWORKAREA = 0x0030
+            result = user32.SystemParametersInfoW(SPI_GETWORKAREA, 0, ctypes.byref(work_area), 0)
+            if result:
+                width = work_area.right - work_area.left
+                height = work_area.bottom - work_area.top
+                return(width, height)
+        except Exception:
+            try:
+                root = tkinter.Tk()
+                root.withdraw()
+                width = root.winfo_screenwidth()
+                height = root.winfo_screenheight()
+                root.destroy()
+                return (width, height)
+            except Exception:
+                return None
 
     @staticmethod # staticmethodデコレータを使用して、インスタンス化せずに呼び出せるようにする
     def get_screen_size():

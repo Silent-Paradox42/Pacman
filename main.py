@@ -1,48 +1,49 @@
 """メイン処理"""
-import pygame
-import sys
-import ui as Ui
 import os
+import sys
+import pygame
 import ctypes
-from constant import constant as const
+from ui import GameUi, StartMenu, GameOverMenu, PauseMenu
+from constant import const
 from soundpro import bgm,se as se
 from player import Player
 from enemy import Enemy
 from map import create_map
 
-# DPI対応
+# --- DPI対応(Windows高DPI環境) ---
 try:
     ctypes.windll.user32.SetProcessDPIAware()
-except:
+except Exception:
     pass
 
-# 画面サイズ取得
-user32 = ctypes.windll.user32
-screen_width = user32.GetSystemMetrics(0)
-screen_height = user32.GetSystemMetrics(1)
-taskbar_height = 40
+# --- ウィンドウ位置を中央に設定 ---
+screen_size = const.get_screen_size()
+if screen_size:
+    x = (screen_size[0] - const.SCREEN_WIDTH) // 2
+    y = (screen_size[1] - const.SCREEN_HEIGHT) // 2
+    os.environ['SDL_VIDEO_WINDOW_POS'] = f"{x},{y}"
+else:
+    os.environ['SDL_VIDEO_WINDOW_POS'] = "0,0"  # 失敗時は左上に固定
 
-# ウィンドウ位置を左上に固定
-os.environ['SDL_VIDEO_WINDOW_POS'] = "0,0"
-
+# --- pygame初期化とウィンドウ作成 ---
 pygame.init()
-screen_size = (screen_width, screen_height - taskbar_height)
-screen = pygame.display.set_mode(screen_size)
+screen = pygame.display.set_mode((const.SCREEN_WIDTH, const.SCREEN_HEIGHT))
 pygame.display.set_caption("Pacman Player and Enemy Test")
 clock = pygame.time.Clock()
 
-# フォント再定義
+# --- フォント・UI・メニュー・BGM・マップ初期化 ---
 next_font = pygame.font.Font(None, const.NEXT_FONT_SIZE)
+ui = GameUi()
+menu = StartMenu(screen)
+go = GameOverMenu(screen)
+pause = PauseMenu(screen)
 
-# uiの初期化
-ui = Ui.GameUi()
-menu = Ui.StartMenu(screen)
-go = Ui.GameOverMenu(screen)
-pause = Ui.PauseMenu(screen)
+# --- スタートメニュー表示 ---
+menu.draw(screen)
 
-menu.draw(screen) # スタートメニューの表示
-stage_bgm = bgm("assets\\bgm\\base2_maou_bgm_healing15.mp3") # BGMの読み込み
-map = create_map() # マップオブジェクトの作成
+# ---BGMとマップ準備---
+stage_bgm = bgm("assets\\bgm\\base2_maou_bgm_healing15.mp3")
+map = create_map()
 
 # マップデータの読み込みまたは生成
 if not menu.flg_stage_command:
