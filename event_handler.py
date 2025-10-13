@@ -1,6 +1,7 @@
 import pygame
 
 def handle_player_input(event, player, enemies, game_map):
+    """プレイヤーの入力を処理する関数"""
     if event.key == pygame.K_LEFT:
         player.set_direction("left")
     elif event.key == pygame.K_RIGHT:
@@ -13,6 +14,7 @@ def handle_player_input(event, player, enemies, game_map):
         player.fire_beam_all_directions(enemies, game_map)
 
 def handle_pause(event, pause, screen, player, game_map, original_map, map, map_surface, stage_bgm):
+    """ゲームの一時停止を処理する関数"""
     if event.key == pygame.K_ESCAPE:
         pause.draw(screen)
         if pause.key == pygame.K_RETURN:
@@ -23,6 +25,7 @@ def handle_pause(event, pause, screen, player, game_map, original_map, map, map_
             stage_bgm.play(-1, 0, 1000)
 
 def handle_events(player, enemies, game_map, original_map, map, map_surface, stage_bgm, pause, screen):
+    """全てのイベントを処理する関数"""
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             return False
