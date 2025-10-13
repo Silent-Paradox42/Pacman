@@ -1,10 +1,10 @@
 import pygame
 from drowchar import charactor
 from constant import const
-from player_movement import PlayerMovementMixin
-from player_status import PlayerStatusMixin
-from player_beam import PlayerBeamMixin
-from player_draw import PlayerDrawMixin
+from player.player_movement import PlayerMovementMixin
+from player.player_status import PlayerStatusMixin
+from player.player_beam import PlayerBeamMixin
+from player.player_draw import PlayerDrawMixin
 
 class Player(charactor, PlayerMovementMixin, PlayerStatusMixin, PlayerBeamMixin, PlayerDrawMixin):
     def __init__(self, img=None, x=1, y=1, game_map=None):

@@ -1,201 +1,88 @@
-"""メイン処理"""
-import os
 import sys
 import pygame
-import ctypes
-from ui import GameUi, StartMenu, GameOverMenu, PauseMenu
-from constant import const
-from soundpro import bgm,se as se
-from player_core import Player
-from enemy import Enemy
+from init_game import initialize_game
+from event_handler import handle_events
+from game_logic import (
+    update_player_and_enemies,
+    handle_next_phase,
+    add_enemy_if_needed,
+    check_game_over
+)
+from draw_handler import (
+    draw_hit_flash,
+    draw_next_phase,
+    draw_gameplay
+)
 from map import create_map
 
-# --- DPI対応(Windows高DPI環境) ---
-try:
-    ctypes.windll.user32.SetProcessDPIAware()
-except Exception:
-    pass
+def main():
+    game_data = initialize_game()
+    screen = game_data["screen"]
+    clock = game_data["clock"]
+    screen_size = game_data["screen_size"]
+    next_font = game_data["next_font"]
+    ui = game_data["ui"]
+    go = game_data["go"]
+    pause = game_data["pause"]
+    stage_bgm = game_data["stage_bgm"]
+    map = game_data["map"]
+    game_map = game_data["game_map"]
+    original_map = game_data["original_map"]
+    map_surface = game_data["map_surface"]
+    player = game_data["player"]
+    enemies = game_data["enemies"]
 
-# --- ウィンドウ位置を中央に設定 ---
-screen_size = const.get_screen_size()
-if screen_size:
-    x = (screen_size[0] - const.SCREEN_WIDTH) // 2
-    y = (screen_size[1] - const.SCREEN_HEIGHT) // 2
-    os.environ['SDL_VIDEO_WINDOW_POS'] = f"{x},{y}"
-else:
-    os.environ['SDL_VIDEO_WINDOW_POS'] = "0,0"  # 失敗時は左上に固定
+    next_phase = False
+    next_timer_start = 0
+    last_enemy_add_time = pygame.time.get_ticks()
+    enemy_add_interval = 20000
 
-# --- pygame初期化とウィンドウ作成 ---
-pygame.init()
-screen = pygame.display.set_mode((const.SCREEN_WIDTH, const.SCREEN_HEIGHT))
-pygame.display.set_caption("Pacman Player and Enemy Test")
-clock = pygame.time.Clock()
+    stage_bgm.play(-1, 0, 1000)
+    running = True
 
-# --- フォント・UI・メニュー・BGM・マップ初期化 ---
-next_font = pygame.font.Font(None, const.NEXT_FONT_SIZE)
-ui = GameUi()
-menu = StartMenu(screen)
-go = GameOverMenu(screen)
-pause = PauseMenu(screen)
+    while running:
+        screen.fill((0, 0, 0))
+        running = handle_events(player, enemies, game_map, original_map, map, map_surface, stage_bgm, pause, screen)
 
-# --- スタートメニュー表示 ---
-menu.draw(screen)
-
-# ---BGMとマップ準備---
-stage_bgm = bgm("assets\\bgm\\base2_maou_bgm_healing15.mp3")
-map = create_map()
-
-# マップデータの読み込みまたは生成
-if not menu.flg_stage_command:
-    # 通常マップを読み込む
-    map_file = const.MAP_DATA.get(90, next(iter(const.MAP_DATA.values())))
-    game_map, original_map = map.load_map(map_file)
-else:
-    # ランダムマップを生成
-    game_map = map.generate_map(21)
-    original_map = [row[:] for row in game_map]
-
-map_surface = pygame.Surface(screen_size) # マップ描画用Surfaceの作成
-map.draw_map(map_surface, game_map) # マップの描画
-
-# プレイヤーと敵キャラの初期化
-player = Player("assets\\charactor\\conkichi01.png", 0 * const.TILE_SIZE, 0 * const.TILE_SIZE, game_map) #マップデータを渡す
-enemies = Enemy.initialize_enemies(game_map, count=2)
-next_phase = False
-next_timer_start = 0
-last_enemy_add_time = pygame.time.get_ticks()
-enemy_add_interval = 20000  # 20秒ごとに敵を1体追加
-
-# メインループ
-running = True
-stage_bgm.play(-1,0,1000)   # BGM再生
-while running:
-    screen.fill((0, 0, 0))  # 背景を黒で塗りつぶし
-
-    # イベント処理
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT:
-                player.set_direction("left")
-            elif event.key == pygame.K_RIGHT:
-                player.set_direction("right")
-            elif event.key == pygame.K_UP:
-                player.set_direction("up")
-            elif event.key == pygame.K_DOWN:
-                player.set_direction("down")
-            elif event.key == pygame.K_ESCAPE:
-                pause.draw(screen)
-                if pause.key == pygame.K_RETURN:
-                    player.reset_state()
-                    player.reset_position()
-                    game_map = [row[:] for row in original_map]
-                    map.draw_map(map_surface, game_map)
-                    stage_bgm.play(-1,0,1000)   # BGM再生
-            elif event.key == pygame.K_SPACE:
-                player.fire_beam_all_directions(enemies, game_map)
-
-    # playerが敵にあたった時の処理と無敵時間調整
-    if player.hit_flash:
         now = pygame.time.get_ticks()
-        if player.hit_flash_count < 6:
-            if (now - player.hit_flash_timer) // 200 % 2 == 0:
-                screen.fill((255, 255, 255))  # 白で塗りつぶし
+
+        if player.hit_flash:
+            if player.hit_flash_count < 6:
+                draw_hit_flash(screen, map_surface, player, enemies, ui, now)
+                if now - player.hit_flash_timer > (player.hit_flash_count + 1) * 200:
+                    player.hit_flash_count += 1
             else:
-                screen.blit(map_surface, (0, 0))
-                player.draw_charactor(screen)
-                player.draw_beam_effects(screen)
+                player.reset_position()
                 for enemy in enemies:
-                    enemy.draw(screen)
-                ui.draw(
-                    screen,
-                    score=player.get_score(),
-                    lives=player.get_lifes(),
-                    charge=player.beam_charge,
-                    max_charge=player.beam_charge_max
-                )
-            if now - player.hit_flash_timer > (player.hit_flash_count + 1) * 200:
-                player.hit_flash_count += 1
-        else:  # 無敵時間終了
-            player.reset_position()
-            for enemy in enemies:
-                enemy.reset_position(game_map)
-            player.beam_charge = 0  # ← チャージをリセット
-            player.can_fire_beam = False  # ← 発射可能フラグもリセット（任意）
-            player.hit_flash = False
-    else:
-        # ドットがすべて消えたか判定
-        if create_map.all_dots_cleared(game_map):
-            if not next_phase:
-                next_phase = True
-                next_timer_start = pygame.time.get_ticks()
-            else:
-                elapsed = pygame.time.get_ticks() - next_timer_start
-                if elapsed < 5000:
-                    # 5秒間「NEXT」表示（ゲーム停止）
-                    screen.blit(map_surface, (0, 0))
-                    player.draw_charactor(screen)
-                    player.draw_beam_effects(screen)
-                    for enemy in enemies:
-                        enemy.draw(screen)                        
-                    ui.draw(screen, player.get_score(), player.get_lifes())
+                    enemy.reset_position(game_map)
+                player.beam_charge = 0
+                player.can_fire_beam = False
+                player.hit_flash = False
 
-                    # 「NEXT」テキストを中央に表示
-                    text = next_font.render("NEXT", True, (255, 255, 255))
-                    text_rect = text.get_rect(center=(screen_size[0] // 2, screen_size[1] // 2))
-                    screen.blit(text, text_rect)
-                else:
-                    # 5秒経過後にマップとプレイヤーをリセット（スコアは維持）
-                    game_map = [row[:] for row in original_map]
-                    map.draw_map(map_surface, game_map)
-                    player.reset_position()
-                    for enemy in enemies:
-                        enemy.reset_position(game_map)                        
-                    next_phase = False      
-        else:
-            # 通常描画・更新
-            screen.blit(map_surface, (0, 0))                     # 背景描画（キャッシュ）
-            player.update(game_map) #毎フレーム呼ばれるプレイヤーの移動処理
-            # ドットを取ったときだけマップを再描画
-            if player.check_dot_and_clear(game_map):
-                map.draw_map(map_surface, game_map)
-            player.check_collision_with_enemy(enemies)           # 敵との当たり判定
-            player_pos = (player.x, player.y)
-            for enemy in enemies:
-                enemy.update(game_map, player_pos)               # 敵の移動処理
-            player.draw_charactor(screen)
-            player.draw_beam_effects(screen)
-            for enemy in enemies:
-                enemy.draw(screen)                               # 敵描画
-            ui.draw(
-                screen,
-                score=player.get_score(),
-                lives=player.get_lifes(),
-                charge=player.beam_charge,
-                max_charge=player.beam_charge_max
+        elif create_map.all_dots_cleared(game_map) or next_phase:
+            next_phase, next_timer_start = handle_next_phase(
+                next_phase, next_timer_start,
+                game_map, original_map,
+                map, map_surface,
+                player, enemies
             )
-            # 敵追加処理（20秒ごと）
-            now = pygame.time.get_ticks()
-            if now - last_enemy_add_time >= enemy_add_interval:
-                new_enemy = Enemy()
-                new_enemy.reset_position(game_map)
-                enemies.append(new_enemy)
-                last_enemy_add_time = now
+            if next_phase:
+                draw_next_phase(screen, map_surface, player, enemies, ui, next_font, screen_size)
 
-        #game over判定
-        if player.get_lifes() <= 0:
-            go.draw(screen)
-            player.reset_state()
-            player.reset_position()
-            game_map = [row[:] for row in original_map]
-            map.draw_map(map_surface, game_map)
-            enemies = Enemy.initialize_enemies(game_map)
-            stage_bgm.play(-1,0,1000)
+        else:
+            update_player_and_enemies(player, enemies, game_map, map, map_surface)
+            last_enemy_add_time = add_enemy_if_needed(enemies, game_map, last_enemy_add_time, enemy_add_interval)
+            draw_gameplay(screen, map_surface, player, enemies, ui)
 
-    # 画面更新
-    pygame.display.flip()
-    clock.tick(60)# ゲーム終了処理
+        new_enemies = check_game_over(player, go, screen, game_map, original_map, map, map_surface, stage_bgm)
+        if new_enemies is not None:
+            enemies = new_enemies
 
-pygame.quit() # pygameの終了
-sys.exit() # プログラムの終了
+        pygame.display.flip()
+        clock.tick(60)
+
+    pygame.quit()
+    sys.exit()
+
+if __name__ == "__main__":
+    main()

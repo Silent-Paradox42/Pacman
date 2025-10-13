@@ -32,7 +32,7 @@ class const:
     MAP_DATA = {
         1: 'assets/map/stage1.csv',
         2: 'assets/map/stage2.csv',
-        3: 'assets/map/sample_stage3.csv',
+        3: 'assets/map/sample_stage.csv',
         90: 'assets/map/pacman_stage.csv',
         91: 'assets/map/sample_stage.csv',
     }
