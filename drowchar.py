@@ -3,7 +3,7 @@
 画像の読み込み・描画・向き変更など共通処理を提供。
 """
 import pygame
-from constant import constant as const
+from constant import const
 
 class charactor:
     """

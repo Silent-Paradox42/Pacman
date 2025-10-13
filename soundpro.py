@@ -46,7 +46,6 @@ class se:
             self.volume = volume
             self.sound.set_volume(self.volume)
 
-
 def main():
     import time
     # pygameの初期化

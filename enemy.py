@@ -1,7 +1,7 @@
 # 敵キャラクターの挙動を定義するモジュール
 import random
 from drowchar import charactor
-from constant import constant as const
+from constant import const
 
 class Enemy(charactor):
     """
@@ -19,26 +19,21 @@ class Enemy(charactor):
         self.x = x
         self.y = y
         self.speed = 2
-        # 初期進行方向をランダムに決定
-        self.direction = random.choice(["left", "right", "up", "down"])
+        self.direction = random.choice(["left", "right", "up", "down"]) # 初期進行方向をランダムに決定
         self.was_at_branch = False  # 前フレームで分岐点だったか
 
     # 敵キャラを初期化する関数
-    def initialize_enemies(game_map):
+    def initialize_enemies(game_map, count=2):
+        # 中央に近い通路から count 個選ぶ
         enemy_positions = []
         for y, row in enumerate(game_map):
             for x, cell in enumerate(row):
-                if cell == 2 or cell == 0:
+                if cell in [0, 2]:
                     enemy_positions.append((x, y))
-
         center = (len(game_map[0]) // 2, len(game_map) // 2)
         enemy_positions.sort(key=lambda pos: (pos[0] - center[0]) ** 2 + (pos[1] - center[1]) ** 2)
-        selected_positions = enemy_positions[:4]
-
-        return [
-            Enemy("assets\\charactor\\black_company.png", x * const.TILE_SIZE, y * const.TILE_SIZE)
-            for x, y in selected_positions
-        ]
+        selected_positions = enemy_positions[:count]
+        return [Enemy("assets\\charactor\\black_company.png", x * const.TILE_SIZE, y * const.TILE_SIZE) for x, y in selected_positions]
 
     def update(self, game_map, player_pos=None):
         """
@@ -127,11 +122,9 @@ class Enemy(charactor):
             dy = -self.speed
         elif self.direction == "down":
             dy = self.speed
-
         new_x, new_y = self.x + dx, self.y + dy
         if self.can_move_to(new_x, new_y, game_map):
             self.x, self.y = new_x, new_y
-
         # 進行方向への画像回転・反転
         self.update_direction(self.direction)
 
@@ -143,14 +136,12 @@ class Enemy(charactor):
 
     def can_move_to(self, x, y, game_map):
         const.CHAR_SIZE = const.CHAR_SIZE
-
         corners = [
             (x, y),
             (x + const.CHAR_SIZE - 1, y),
             (x, y + const.CHAR_SIZE - 1),
             (x + const.CHAR_SIZE - 1, y + const.CHAR_SIZE - 1)
         ]
-
         for cx, cy in corners:
             grid_x = cx // const.CHAR_SIZE
             grid_y = cy // const.CHAR_SIZE
@@ -158,7 +149,6 @@ class Enemy(charactor):
                 return False
             if game_map[grid_y][grid_x] not in [0, 2]:
                 return False
-
         return True
     
     def reset_position(self, game_map):

@@ -6,7 +6,7 @@ import ctypes
 from ui import GameUi, StartMenu, GameOverMenu, PauseMenu
 from constant import const
 from soundpro import bgm,se as se
-from player import Player
+from player_core import Player
 from enemy import Enemy
 from map import create_map
 
@@ -60,9 +60,11 @@ map.draw_map(map_surface, game_map) # マップの描画
 
 # プレイヤーと敵キャラの初期化
 player = Player("assets\\charactor\\conkichi01.png", 0 * const.TILE_SIZE, 0 * const.TILE_SIZE, game_map) #マップデータを渡す
-enemies = Enemy.initialize_enemies(game_map)
+enemies = Enemy.initialize_enemies(game_map, count=2)
 next_phase = False
 next_timer_start = 0
+last_enemy_add_time = pygame.time.get_ticks()
+enemy_add_interval = 20000  # 20秒ごとに敵を1体追加
 
 # メインループ
 running = True
@@ -92,7 +94,7 @@ while running:
                     map.draw_map(map_surface, game_map)
                     stage_bgm.play(-1,0,1000)   # BGM再生
             elif event.key == pygame.K_SPACE:
-                player.fire_beam()
+                player.fire_beam_all_directions(enemies, game_map)
 
     # playerが敵にあたった時の処理と無敵時間調整
     if player.hit_flash:
@@ -103,6 +105,7 @@ while running:
             else:
                 screen.blit(map_surface, (0, 0))
                 player.draw_charactor(screen)
+                player.draw_beam_effects(screen)
                 for enemy in enemies:
                     enemy.draw(screen)
                 ui.draw(
@@ -133,6 +136,7 @@ while running:
                     # 5秒間「NEXT」表示（ゲーム停止）
                     screen.blit(map_surface, (0, 0))
                     player.draw_charactor(screen)
+                    player.draw_beam_effects(screen)
                     for enemy in enemies:
                         enemy.draw(screen)                        
                     ui.draw(screen, player.get_score(), player.get_lifes())
@@ -160,7 +164,8 @@ while running:
             player_pos = (player.x, player.y)
             for enemy in enemies:
                 enemy.update(game_map, player_pos)               # 敵の移動処理
-            player.draw_charactor(screen)                        # プレイヤー描画
+            player.draw_charactor(screen)
+            player.draw_beam_effects(screen)
             for enemy in enemies:
                 enemy.draw(screen)                               # 敵描画
             ui.draw(
@@ -170,6 +175,13 @@ while running:
                 charge=player.beam_charge,
                 max_charge=player.beam_charge_max
             )
+            # 敵追加処理（20秒ごと）
+            now = pygame.time.get_ticks()
+            if now - last_enemy_add_time >= enemy_add_interval:
+                new_enemy = Enemy()
+                new_enemy.reset_position(game_map)
+                enemies.append(new_enemy)
+                last_enemy_add_time = now
 
         #game over判定
         if player.get_lifes() <= 0:

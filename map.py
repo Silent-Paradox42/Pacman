@@ -3,7 +3,7 @@ import pygame
 import csv
 import copy
 import random
-from constant import constant as const
+from constant import const
 
 # マップIDと対応するCSVファイルパスの辞書
 class create_map():
