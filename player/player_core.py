@@ -1,5 +1,5 @@
 import pygame
-from drowchar import charactor
+from charactor import charactor
 from constant import const
 from player.player_movement import PlayerMovementMixin
 from player.player_status import PlayerStatusMixin

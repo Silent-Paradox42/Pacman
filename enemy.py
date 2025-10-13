@@ -1,6 +1,6 @@
 # 敵キャラクターの挙動を定義するモジュール
 import random
-from drowchar import charactor
+from charactor import charactor
 from constant import const
 
 class Enemy(charactor):

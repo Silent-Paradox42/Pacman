@@ -1,5 +1,4 @@
 import pygame
-from constant import const
 import soundpro
 
 pygame.init()

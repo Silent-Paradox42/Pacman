@@ -1,4 +1,3 @@
-import pygame
 
 def draw_hit_flash(screen, map_surface, player, enemies, ui, now):
     if (now - player.hit_flash_timer) // 200 % 2 == 0:

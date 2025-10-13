@@ -9,6 +9,7 @@ from enemy import Enemy
 from map import create_map
 
 def initialize_game():
+    """ゲームの初期化を行い、必要なオブジェクトを返す"""
     # DPI対応
     try:
         ctypes.windll.user32.SetProcessDPIAware()
