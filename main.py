@@ -16,6 +16,7 @@ from draw_handler import (
 from map import create_map
 
 def main():
+    # オブジェクト変数を各変数に割り振り
     game_data = initialize_game()
     screen = game_data["screen"]
     clock = game_data["clock"]
@@ -36,14 +37,12 @@ def main():
     next_timer_start = 0
     last_enemy_add_time = pygame.time.get_ticks()
     enemy_add_interval = 20000
-
     stage_bgm.play(-1, 0, 1000)
     running = True
 
     while running:
         screen.fill((0, 0, 0))
         running = handle_events(player, enemies, game_map, original_map, map, map_surface, stage_bgm, pause, screen)
-
         now = pygame.time.get_ticks()
 
         if player.hit_flash:

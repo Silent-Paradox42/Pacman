@@ -1,4 +1,5 @@
 import pygame
+from player.player_beam import PlayerBeamMixin
 
 def handle_player_input(event, player, enemies, game_map):
     """プレイヤーの入力を処理する関数"""
@@ -12,7 +13,7 @@ def handle_player_input(event, player, enemies, game_map):
         player.set_direction("down")
     elif event.key == pygame.K_SPACE:
         player.fire_beam_all_directions(enemies, game_map)
-
+        
 def handle_pause(event, pause, screen, player, game_map, original_map, map, map_surface, stage_bgm):
     """ゲームの一時停止を処理する関数"""
     if event.key == pygame.K_ESCAPE:

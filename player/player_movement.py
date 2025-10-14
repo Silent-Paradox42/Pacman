@@ -68,12 +68,7 @@ class PlayerMovementMixin:
         if self.can_move_to(new_x, new_y, game_map):
             self.x, self.y = new_x, new_y
             self.wait_count = 0
-
-            # ビームチャージ処理（移動時にチャージ）
-            if self.beam_charge < self.beam_charge_max:
-                self.beam_charge += 1
-                if self.beam_charge >= self.beam_charge_max:
-                    self.can_fire_beam = True
+            
         else:
             # 壁にぶつかったら即座に完全停止
             self.stuck = True

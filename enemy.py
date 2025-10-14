@@ -22,9 +22,8 @@ class Enemy(charactor):
         self.direction = random.choice(["left", "right", "up", "down"]) # 初期進行方向をランダムに決定
         self.was_at_branch = False  # 前フレームで分岐点だったか
 
-    # 敵キャラを初期化する関数
     def initialize_enemies(game_map, count=2):
-        # 中央に近い通路から count 個選ぶ
+        """マップ上の通路（tile=2 または 0）から count 個"""
         enemy_positions = []
         for y, row in enumerate(game_map):
             for x, cell in enumerate(row):
