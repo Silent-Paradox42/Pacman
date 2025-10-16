@@ -34,6 +34,8 @@ def main():
     enemies = game_data["enemies"]
 
     next_phase = False
+    next_phase_drawn = False
+    phase_count = 0
     next_timer_start = 0
     last_enemy_add_time = pygame.time.get_ticks()
     enemy_add_interval = 20000
@@ -59,14 +61,25 @@ def main():
                 player.hit_flash = False
 
         elif create_map.all_dots_cleared(game_map) or next_phase:
-            next_phase, next_timer_start = handle_next_phase(
+            """次のステージへ進む処理"""
+            if not next_phase:
+                phase_count += 1
+
+            next_phase, next_timer_start, phase_finished = handle_next_phase(
                 next_phase, next_timer_start,
                 game_map, original_map,
                 map, map_surface,
                 player, enemies
             )
-            if next_phase:
+
+            if next_phase_drawn and pygame.time.get_ticks() - next_timer_start < 5000:
                 draw_next_phase(screen, map_surface, player, enemies, ui, next_font, screen_size)
+                pygame.display.flip()
+                clock.tick(60)
+                continue
+
+            if phase_finished:
+                next_phase_drawn = False
 
         else:
             update_player_and_enemies(player, enemies, game_map, map, map_surface)

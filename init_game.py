@@ -46,7 +46,7 @@ def initialize_game():
     map = create_map()
 
     if not menu.flg_stage_command:
-        map_file = const.MAP_DATA.get(90, next(iter(const.MAP_DATA.values())))
+        map_file = const.MAP_DATA.get(3, next(iter(const.MAP_DATA.values())))
         game_map, original_map = map.load_map(map_file)
     else:
         game_map = map.generate_map(21)

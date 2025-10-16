@@ -1,5 +1,4 @@
 import pygame
-from player.player_beam import PlayerBeamMixin
 
 def handle_player_input(event, player, enemies, game_map):
     """プレイヤーの入力を処理する関数"""

@@ -11,18 +11,19 @@ def draw_hit_flash(screen, map_surface, player, enemies, ui, now):
             enemy.draw(screen)
         draw_ui(screen, ui, player)
 
-def draw_next_phase(screen, map_surface, player, enemies, ui, next_font, screen_size):
-    """次のステージに進む際の「NEXT」表示を描画する関数"""
+def draw_next_phase(screen, map_surface, player, enemies, ui, next_font):
     screen.blit(map_surface, (0, 0))
     player.draw_charactor(screen)
-    player.draw_beam_effects(screen)
     for enemy in enemies:
         enemy.draw(screen)
     draw_ui(screen, ui, player)
 
-    # 最後にテキストを描画（最前面に表示される）
+    # ゲーム画面の中央に表示
+    width, height = screen.get_size()
     text = next_font.render("NEXT", True, (255, 255, 255))
-    text_rect = text.get_rect(center=(screen_size[0] // 2, screen_size[1] // 2))
+    text_rect = text.get_rect(center=(width // 2, height // 2))
+
+    # ここで text_rect を使って blit する
     screen.blit(text, text_rect)
 
 def draw_gameplay(screen, map_surface, player, enemies, ui):

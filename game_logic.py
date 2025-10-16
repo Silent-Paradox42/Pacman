@@ -14,7 +14,8 @@ def update_player_and_enemies(player, enemies, game_map, map, map_surface):
 def handle_next_phase(next_phase, next_timer_start, game_map, original_map, map, map_surface, player, enemies):
     """次のステージに進む処理を行う関数"""
     if not next_phase:
-        return True, pygame.time.get_ticks()
+        return True, pygame.time.get_ticks(), False
+
     elapsed = pygame.time.get_ticks() - next_timer_start
     if elapsed >= 5000:
         game_map[:] = [row[:] for row in original_map]
@@ -22,8 +23,8 @@ def handle_next_phase(next_phase, next_timer_start, game_map, original_map, map,
         player.reset_position()
         for enemy in enemies:
             enemy.reset_position(game_map)
-        return False, 0
-    return next_phase, next_timer_start
+        return False, 0, True  # フェーズ終了
+    return next_phase, next_timer_start, False
 
 def add_enemy_if_needed(enemies, game_map, last_enemy_add_time, enemy_add_interval):
     """一定時間ごとに新しい敵キャラクターを追加する関数"""
